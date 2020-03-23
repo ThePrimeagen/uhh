@@ -4,8 +4,6 @@ list(APPEND EXTRA_LIBS setup)
 list(APPEND EXTRA_LIBS stdc++fs)
 list(APPEND EXTRA_LIBS git2)
 
-include_directories(3rdparty/libgit2/include)
-
 add_executable(uhh uhh.cpp)
 
 # add the executable

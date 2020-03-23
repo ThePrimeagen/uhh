@@ -3,6 +3,7 @@
 #include <string>
 #include <filesystem>
 #include <iostream>
+#include "git2.h"
 
 namespace fs = std::filesystem;
 
@@ -36,6 +37,7 @@ void readyGit(Uhh* uhh, bool shouldInitGit) {
     if (!shouldInitGit) {
         return;
     }
+
 }
 
 Uhh::Uhh(std::string& base) {

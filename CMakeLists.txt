@@ -12,6 +12,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # configure_file(compile_commands.json ../../TEST_FILE.json COPYONLY)
 
 add_subdirectory(3rdparty/libgit2)
+
+# Double Ewe Tee Eff?
+include_directories(3rdparty/libgit2/include)
+
 add_subdirectory(src)
 
 
