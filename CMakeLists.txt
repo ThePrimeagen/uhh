@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+
 # set the project name
 project(uhh VERSION 1.0)
 
@@ -11,10 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(PROJECT_LIB_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 # configure_file(compile_commands.json ../../TEST_FILE.json COPYONLY)
 
-add_subdirectory(3rdparty/libgit2)
-
-# Double Ewe Tee Eff?
-include_directories(3rdparty/libgit2/include)
+find_package(libgit2)
 
 add_subdirectory(src)
 
