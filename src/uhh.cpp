@@ -1,8 +1,6 @@
 #include "setup/setup.h"
 
-int main(int argc, char** argv) {
-    (void)argc;
-    (void)argv;
+int main(void) {
 
     std::string home = std::string(getenv("HOME"));
     Uhh* uhh = new Uhh(home);
