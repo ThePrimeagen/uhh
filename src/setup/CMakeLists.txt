@@ -1,7 +1,7 @@
 add_library(setup setup.cpp setup.h)
 
 list(APPEND EXTRA_LIBS stdc++fs)
-list(APPEND EXTRA_LIBS git2)
+list(APPEND EXTRA_LIBS git2::git2)
 
 target_link_libraries(setup PUBLIC
     ${EXTRA_LIBS}
