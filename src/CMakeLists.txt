@@ -1,21 +1,17 @@
-#add_subdirectory(comms)
+add_subdirectory(setup)
 
-#list(APPEND EXTRA_LIBS system-commands)
+list(APPEND EXTRA_LIBS setup)
+list(APPEND EXTRA_LIBS stdc++fs)
+list(APPEND EXTRA_LIBS git2)
 
 # add the executable
 add_executable(uhh uhh.cpp)
+set_property(TARGET uhh PROPERTY CXX_STANDARD 17)
 
-# find_package(Threads REQUIRED)
+target_link_libraries(uhh PUBLIC
+    ${EXTRA_LIBS}
+)
 
-# target_link_libraries(vim-with-me PUBLIC
-#    ${EXTRA_LIBS}
-#    Threads::Threads
-#)
-
-# configure_file(vim-with-me.h.in vim-with-me.h)
-
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 target_include_directories(uhh PUBLIC
     "${PROJECT_BINARY_DIR}"

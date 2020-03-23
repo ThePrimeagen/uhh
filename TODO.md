@@ -13,11 +13,11 @@ You buy, you build
 
 ### Usage
 uhh <partialsomething>
-uhh uhh = help 
-uhh wat = help 
-uhh huh = help 
+uhh uhh = help
+uhh wat = help
+uhh huh = help
 
-uhh help = help 
+uhh help = help
     will list a random help command
     then list update, add, ...
 

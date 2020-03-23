@@ -1,2 +1,5 @@
 builds
+compile_commands.json
+.clangd
+.zshrc.bak
 
