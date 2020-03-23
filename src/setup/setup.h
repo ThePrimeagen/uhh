@@ -3,16 +3,30 @@
 #include <fstream>
 #include <string>
 
+struct UhhOpts {
+    std::string basePath;
+    std::string command;
+};
+
+struct UhhConfig {
+    std::string repoUrl;
+};
+
 class Uhh {
     public:
-        std::string dir;
-        std::string configPath;
-        std::string repoPath;
-
-        Uhh(std::string& base);
+        Uhh(UhhOpts& opts);
         ~Uhh();
 
     private:
-        bool uninitialized;
-};
+        bool initialized;
 
+        std::string dir;
+        std::string configPath;
+        std::string repoPath;
+        UhhConfig config;
+
+        void readyDirectory();
+        void initPreferences();
+        void readPreferences();
+        void readyGit();
+};

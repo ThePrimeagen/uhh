@@ -12,7 +12,7 @@ You buy, you build
 ### .uhh file
 
 ### Usage
-uhh <partialsomething>
+uhh <tag/cmd just anything...> <fuzzyfind>
 uhh uhh = help
 uhh wat = help
 uhh huh = help
