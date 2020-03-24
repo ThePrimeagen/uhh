@@ -1,5 +1,7 @@
 builds
+build
 compile_commands.json
 .clangd
 .zshrc.bak
+.vscode
 
