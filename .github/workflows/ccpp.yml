@@ -20,7 +20,7 @@ jobs:
         CC: "gcc-9"
         CXX: "g++-9" 
     - name: make
-      run: make
+      run: cd build && make
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
