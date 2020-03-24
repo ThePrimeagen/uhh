@@ -21,10 +21,12 @@ jobs:
         CXX: "g++-9" 
     - name: make
       run: make
+    - name: move to out
+      run: mkdir out && cp ./src/uhh ./out
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
         # Artifact name
         name: uhh
         # Directory containing files to upload
-        path: ./
+        path: ./out
