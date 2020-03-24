@@ -15,16 +15,16 @@ jobs:
       with:
         submodules: true
     - name: cmake
-      run: mkdir build && cd build  && cmake ..
+      run: cmake .
       env:
         CC: "gcc-9"
         CXX: "g++-9" 
     - name: make
-      run: cd build && make
+      run: make
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
         # Artifact name
         name: uhh
         # Directory containing files to upload
-        path: ./build/uhh
+        path: uhh
