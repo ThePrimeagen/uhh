@@ -8,13 +8,20 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        compiler: ["gcc-9"]
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: true
     - name: cmake
-      run: cmake .
+      run: apt install libssl-dev && cmake .
+      env:
+        CC: ${{ matrix.compiler }}
     - name: make
       run: make
     - name: Upload artifact
