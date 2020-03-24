@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
         cmd
     };
 
-    Uhh* uhh = new Uhh(opts);
+    Uhh uhh{opts};
 
     if (cmd.compare("add") == 0) {
         std::string tag, cmd, note;
@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
         std::cout << "What is the note? ";
         std::getline(std::cin, note);
 
-        uhh->addCommand(tag, cmd, note);
+        uhh.addCommand(tag, cmd, note);
     } else {
         std::stringstream str;
         int i = argc - 2;
@@ -60,7 +60,7 @@ int main(int argc, char** argv) {
             }
         }
 
-        uhh->find(cmd, str.str());
+        uhh.find(cmd, str.str());
     }
 
     return 0;
