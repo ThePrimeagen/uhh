@@ -2,6 +2,7 @@
 
 #include <string>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include "git2.h"
 #include "git2/credential.h"
