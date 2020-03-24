@@ -2,31 +2,34 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, develop ]
   pull_request:
     branches: [ master ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
 
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: cmake
-      run: cmake .
-      env:
-        CC: "gcc-9"
-        CXX: "g++-9" 
-    - name: make
-      run: make
-    - name: move to out
-      run: mkdir out && cp ./src/uhh ./out
-    - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        # Artifact name
-        name: uhh
-        # Directory containing files to upload
-        path: ./out
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: build folder
+        run: mkdir build
+      - name: cmake
+        run: cmake .
+        env:
+          CC: "gcc-9"
+          CXX: "g++-9" 
+      - name: make
+        run: make
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          # Artifact name
+          name: uhh
+          # Directory containing files to upload
+          path: ./build
