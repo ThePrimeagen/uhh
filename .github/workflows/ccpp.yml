@@ -27,4 +27,4 @@ jobs:
         # Artifact name
         name: uhh
         # Directory containing files to upload
-        path: uhh
+        path: ./
