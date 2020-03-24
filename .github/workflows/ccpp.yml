@@ -19,7 +19,7 @@ jobs:
       with:
         submodules: true
     - name: cmake
-      run: apt install libssl-dev && cmake .
+      run: cmake .
       env:
         CC: ${{ matrix.compiler }}
     - name: make
