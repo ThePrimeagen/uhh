@@ -7,28 +7,29 @@ on:
     branches: [ master ]
 
 jobs:
-  strategy:
-    matrix:
-      os: [ ubuntu-latest, macos-latest, windows-latest ]
-  
-  runs-on: ${{ matrix.os }}
+  build:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: true
-    - name: build folder
-      run: mkdir build
-    - name: cmake
-      run: cmake .
-      env:
-        CC: "gcc-9"
-        CXX: "g++-9" 
-    - name: make
-      run: make
-    - name: Upload artifact
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        # Artifact name
-        name: uhh
-        # Directory containing files to upload
-        path: ./build
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: build folder
+        run: mkdir build
+      - name: cmake
+        run: cmake .
+        env:
+          CC: "gcc-9"
+          CXX: "g++-9" 
+      - name: make
+        run: make
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          # Artifact name
+          name: uhh
+          # Directory containing files to upload
+          path: ./build
