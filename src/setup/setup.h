@@ -1,6 +1,5 @@
 #pragma once
 
-#include <fstream>
 #include <string>
 
 struct UhhOpts {
@@ -16,7 +15,6 @@ struct UhhConfig {
 class Uhh {
     public:
         Uhh(UhhOpts& opts);
-        ~Uhh();
 
         void addCommand(const std::string& tag, const std::string& cmd, const std::string& note);
         void find(const std::string& tag, const std::string& needle = "");
