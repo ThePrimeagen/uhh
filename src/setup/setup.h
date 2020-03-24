@@ -6,6 +6,7 @@
 struct UhhOpts {
     std::string basePath;
     std::string command;
+    bool verbose = false;
 };
 
 struct UhhConfig {
@@ -17,8 +18,12 @@ class Uhh {
         Uhh(UhhOpts& opts);
         ~Uhh();
 
+        void addCommand(const std::string& tag, const std::string& cmd, const std::string& note);
+        void find(const std::string& tag, const std::string& needle = "");
+
     private:
         bool initialized;
+        UhhOpts options;
 
         std::string dir;
         std::string configPath;

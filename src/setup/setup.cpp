@@ -91,7 +91,69 @@ void Uhh::readyGit() {
     }
 }
 
+void Uhh::find(const std::string& tag, const std::string& needle) {
+    fs::path repo(repoPath);
+    fs::path tagFile = repo / tag;
+
+    std::ifstream in;
+
+    if (fs::is_regular_file(tagFile)) {
+        in.open(tagFile, std::ios::app);
+    }
+    else {
+        printf("No Entries found for %s\n", tag.c_str());
+        return;
+    }
+
+    std::string cmd, note;
+    while (std::getline(in, cmd) && std::getline(in, note)) {
+        if (!needle.empty()) {
+            if (cmd.find(needle) == std::string::npos &&
+                note.find(needle) == std::string::npos) {
+                continue;
+            }
+        }
+
+        if (options.verbose) {
+            printf("Note: %s\n", note.c_str());
+            printf("Cmd: %s\n", cmd.c_str());
+        } else {
+            printf("%s\n", cmd.c_str());
+        }
+    }
+}
+
+void Uhh::addCommand(const std::string& tag, const std::string& cmd, const std::string& note) {
+    // I GET IT IT COULD BE BETTER
+    fs::path repo(repoPath);
+    fs::path tagFile = repo / tag;
+
+    std::ofstream out;
+
+    if (fs::is_regular_file(tagFile)) {
+        out.open(tagFile, std::ios::app);
+    } else {
+        std::ofstream ofs(tagFile);
+        out.open(tagFile, std::ios::app);
+    }
+
+    if (!out.good()) {
+        throw std::runtime_error("Could not open file");
+    }
+
+    out << cmd;
+    if (cmd.back() != '\n') {
+        out << '\n';
+    }
+
+    out << note;
+    if (note.back() != '\n') {
+        out << '\n';
+    }
+}
+
 Uhh::Uhh(UhhOpts &opts) {
+    options = opts;
     dir = opts.basePath + "/.uhh";
     configPath = dir + "/.config";
     repoPath = dir + "/repo";
@@ -106,6 +168,5 @@ Uhh::Uhh(UhhOpts &opts) {
         readPreferences();
         readyGit();
     }
-
 }
 

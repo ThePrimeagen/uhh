@@ -1,7 +1,8 @@
 #include <vector>
 #include <algorithm>
+#include <iostream>
+#include <sstream>
 #include "setup/setup.h"
-
 
 std::vector<std::string> helps {
     "uhh",
@@ -9,6 +10,7 @@ std::vector<std::string> helps {
     "huh",
     "wat",
     "what",
+    "-h",
     "wut",
 };
 
@@ -17,8 +19,6 @@ void printHelp() {
 }
 
 int main(int argc, char** argv) {
-    printf("Commands %d\n", argc);
-
     if (argc < 2) {
         printHelp();
         return 0;
@@ -37,6 +37,31 @@ int main(int argc, char** argv) {
     };
 
     Uhh* uhh = new Uhh(opts);
+
+    if (cmd.compare("add") == 0) {
+        std::string tag, cmd, note;
+        std::cout << "What is the tag? ";
+        std::getline(std::cin, tag);
+        std::cout << "What is the command? ";
+        std::getline(std::cin, cmd);
+        std::cout << "What is the note? ";
+        std::getline(std::cin, note);
+
+        uhh->addCommand(tag, cmd, note);
+    } else {
+        std::stringstream str;
+        int i = argc - 2;
+        int idx = 1;
+
+        for (int i = 2; i < argc; ++i) {
+            str << argv[i];
+            if (i + 1 < argc) {
+                str << " ";
+            }
+        }
+
+        uhh->find(cmd, str.str());
+    }
 
     return 0;
 }
