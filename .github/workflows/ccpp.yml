@@ -8,10 +8,6 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        compiler: ["gcc-9"]
-
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +17,8 @@ jobs:
     - name: cmake
       run: cmake .
       env:
-        CC: ${{ matrix.compiler }}
+        CC: "gcc-9"
+        CXX: "g++-9" 
     - name: make
       run: make
     - name: Upload artifact
