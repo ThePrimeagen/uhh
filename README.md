@@ -3,7 +3,8 @@ When you keep forgetting those sweet sweet sweet sweet commands.
 
 # Requirements
 > libssl-dev -> `apt install libssl-dev`
-> gcc9 & g++9 -> `apt install gcc-9 g++-9`
+  
+>  gcc9 & g++9 -> `apt install gcc-9 g++-9`
 
 # How to build
 ```
