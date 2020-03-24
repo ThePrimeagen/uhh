@@ -2,7 +2,7 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, develop ]
   pull_request:
     branches: [ master ]
 
@@ -22,7 +22,7 @@ jobs:
     - name: make
       run: make
     - name: move to out
-      run: mkdir out && cp ./src/uhh ./out
+      run: mkdir out && cp ./uhh ./out
     - name: Upload artifact
       uses: actions/upload-artifact@v1.0.0
       with:
