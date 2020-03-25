@@ -20,7 +20,7 @@ commandFunction* Commands::get(const std::string name) {
     return cmdList.find(name)->second;
 }
 
-int Commands::get(const std::string name, char** argv) {
+int Commands::get(const std::string name, std::vector<std::string> argv) {
     auto cmd = get(name);
     if(cmd == nullptr) {
         return 0;

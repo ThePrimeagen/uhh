@@ -16,22 +16,24 @@ std::vector<std::string> helps {
 };
 
 
-int helpFunction(char **argv) {
+int helpFunction(std::vector<std::string> args) {
     printf("Look, its a help menu\n");
-    return 1;
+    return 0;
 }
 
 int main(int argc, char** argv) {
+    std::vector<std::string> commandArgs(argv + 1, argv + argc);
+
     Commands handler;
     handler + std::make_tuple("help", &helpFunction);
 
-    if (argc < 2) {
-        return handler["help"](argv);
+    if (commandArgs.size() == 0) {
+        return handler["help"](commandArgs);
     }
 
-    std::string cmd(argv[1]);
+    std::string cmd(commandArgs[0]);
     if (std::find(helps.begin(), helps.end(), cmd.c_str()) != helps.end()) {
-        return handler["help"](argv);
+        return handler["help"](commandArgs);
     }
 
     std::string home = std::string(getenv("HOME"));
@@ -42,7 +44,10 @@ int main(int argc, char** argv) {
 
     Uhh uhh{opts};
 
-    if(handler.get(cmd, argv) == 0) {
+    // remove are command
+    commandArgs.erase(commandArgs.begin());
+
+    if(handler.get(cmd, commandArgs) == 0) {
         return 1;
     }
     

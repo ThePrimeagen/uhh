@@ -2,8 +2,9 @@
 
 #include <map> 
 #include <string>
+#include <vector>
 
-typedef int commandFunction(char**);
+typedef int commandFunction(const std::vector<std::string>);
 
 class Commands {
     private:
@@ -15,7 +16,7 @@ class Commands {
         void add(const std::string name, commandFunction* func);
         commandFunction* get(const std::string name);
         // call function
-        int get(const std::string name, char**);
+        int get(const std::string name, const std::vector<std::string>);
 
     // Operator overloading
     public:
