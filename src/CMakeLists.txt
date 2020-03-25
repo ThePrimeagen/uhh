@@ -1,6 +1,8 @@
 add_subdirectory(setup)
+add_subdirectory(commands)
 
 list(APPEND EXTRA_LIBS setup)
+list(APPEND EXTRA_LIBS commmands)
 list(APPEND EXTRA_LIBS stdc++fs)
 list(APPEND EXTRA_LIBS git2)
 
