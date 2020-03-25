@@ -4,46 +4,48 @@ Commands::Commands() {
     cmdList = {};
 }
 
-// TODO: destory command list on close
-Commands::~Commands() {
+void Commands::add(const CommandInfo command) {
+    // cmdList[command.name] = command;
+    cmdList.insert({
+        command.name,
+        command
+    });
 }
 
-void Commands::add(const CommandInfo* command) {
-    cmdList[command->name] = command;
-}
-
-void Commands::add(const std::string name, const std::string usage, const commandFunction* func) {
-    const CommandInfo info = {
+void Commands::add(const std::string name, const std::string usage, std::function<commandFunction> func) {
+    // cmdList[command.name] = command;
+    cmdList.insert({
+        name,
+        CommandInfo {
             .name = name,
             .usage = usage,
-            .command = func
-    };
-
-    cmdList[name] = &info;
+            .func = func
+        }
+    });
 }
 
 
-const CommandInfo* Commands::get(const std::string name) {
+const CommandInfo Commands::get(const std::string name) {
     if(cmdList.find(name) == cmdList.end()) {
-        return nullptr;
+        return CommandInfo {};
     }
 
     return cmdList.find(name)->second;
 }
 
-int Commands::get(const std::string name, std::vector<std::string> argv) {
-    auto cmd = get(name);
-    if(cmd == nullptr) {
-        return 0;
+const int Commands::call(const std::string name, const std::vector<std::string> args) {
+    if(cmdList.find(name) == cmdList.end()) {
+        return NULL;
     }
 
-    return cmd->command(argv);
+    return cmdList.find(name)->second.func(args);
 }
 
-const CommandInfo* Commands::operator[](const std::string name) {
+
+const CommandInfo Commands::operator[](const std::string name) {
     return get(name);
 }
 
-void Commands::operator +(const CommandInfo* command) {
+void Commands::operator +(const CommandInfo command) {
     add(command);
 }

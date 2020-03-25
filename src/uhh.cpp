@@ -84,83 +84,49 @@ int main(int argc, char **argv)
     const CommandInfo help = {
         .name = "help",
         .usage = "help",
-        .command = &helpFunction,
+        .func = helpFunction,
     };
-    handler + &help;
+    handler + help;
 
     const CommandInfo about = {
         .name = "about",
         .usage = "about",
-        .command = &aboutFunction,
+        .func = aboutFunction,
     };
-    handler + &about;
+    handler + about;
 
     const CommandInfo add = {
         .name = "add",
         .usage = "add",
-        .command = &addFunction,
+        .func = addFunction,
     };
-    handler + &add;
+    handler + add;
 
     const CommandInfo find = {
         .name = "find",
         .usage = "find",
-        .command = &findFunction,
+        .func = findFunction,
     };
-    handler + &find;
+    handler + find;
 
     if (commandArgs.size() == 0)
     {
-        return handler["help"]->command(commandArgs);
+        return handler["help"].func(commandArgs);
     }
 
     std::string cmd(commandArgs[0]);
     if (std::find(helps.begin(), helps.end(), cmd.c_str()) != helps.end())
     {
-        return handler["help"]->command(commandArgs);
+        return handler["help"].func(commandArgs);
     }
-
-    /*
-    Cofigure this in your "method" 
-    std::string home = std::string(getenv("HOME"));
-    UhhOpts opts{
-        home,
-        cmd
-    };
-
-    Uhh uhh{opts};
-    */
 
     // remove are command
     commandArgs.erase(commandArgs.begin());
-    return handler.get(cmd, commandArgs);
-
-    /*
-    if (cmd.compare("add") == 0) {
-        std::string tag, cmd, note;
-        std::cout << "What is the tag? ";
-        std::getline(std::cin, tag);
-        std::cout << "What is the command? ";
-        std::getline(std::cin, cmd);
-        std::cout << "What is the note? ";
-        std::getline(std::cin, note);
-
-        uhh.addCommand(tag, cmd, note);
-    } else {
-        std::stringstream str;
-        int i = argc - 2;
-        int idx = 1;
-
-        for (int i = 2; i < argc; ++i) {
-            str << argv[i];
-            if (i + 1 < argc) {
-                str << " ";
-            }
-        }
-
-        uhh.find(cmd, str.str());
+    auto cmdInfo = handler[cmd];
+    if(cmdInfo.func == nullptr) {
+        printf("error %s does not exist", cmd.c_str());
+        return 1;
     }
-    */
 
-    return 0;
+    return cmdInfo.func(commandArgs);
 }
