@@ -27,6 +27,7 @@ class Commands {
 
         const std::optional<CommandInfo> get(const std::string name);
         const int call(Uhh& uhh, const std::string name, const std::vector<std::string> args);
+        const int has(const std::string name);
 
     // Operator overloading
     public:

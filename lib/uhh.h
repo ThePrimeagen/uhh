@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <string>
 
 struct UhhOpts {
@@ -16,16 +17,17 @@ class Uhh {
         Uhh(UhhOpts& opts);
 
         void addCommand(const std::string& tag, const std::string& cmd, const std::string& note);
-        void find(const std::string& tag, const std::string& needle = "");
+        void find(const std::vector<std::string>& args);
 
     private:
         bool initialized;
+
         UhhOpts options;
+        UhhConfig config;
 
         std::string dir;
         std::string configPath;
         std::string repoPath;
-        UhhConfig config;
 
         void readyDirectory();
         void initPreferences();

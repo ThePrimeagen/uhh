@@ -2,6 +2,7 @@
 
 #include <string>
 #include <filesystem>
+#include <vector>
 #include <fstream>
 #include <iostream>
 #include "git2.h"
@@ -92,7 +93,10 @@ void Uhh::readyGit() {
     }
 }
 
-void Uhh::find(const std::string& tag, const std::string& needle) {
+void Uhh::find(const std::vector<std::string>& args) {
+    int ptr = 0;
+    std::string tag = args[ptr++];
+
     fs::path repo(repoPath);
     fs::path tagFile = repo / tag;
 
@@ -106,11 +110,19 @@ void Uhh::find(const std::string& tag, const std::string& needle) {
         return;
     }
 
+
+    std::vector<std::string> needle(args.begin() + 1, args.end());
     std::string cmd, note;
+
     while (std::getline(in, cmd) && std::getline(in, note)) {
         if (!needle.empty()) {
-            if (cmd.find(needle) == std::string::npos &&
-                note.find(needle) == std::string::npos) {
+            bool found = true;
+            for (int i = ptr; found && i < needle.size(); ++i) {
+                found = !(cmd.find(needle[i]) == std::string::npos &&
+                    note.find(needle[i]) == std::string::npos);
+            }
+
+            if (!found) {
                 continue;
             }
         }
@@ -125,6 +137,8 @@ void Uhh::find(const std::string& tag, const std::string& needle) {
 }
 
 void Uhh::addCommand(const std::string& tag, const std::string& cmd, const std::string& note) {
+    // TODO: Reserverd words.  You cannot have commands with help, list, update, sync
+
     // I GET IT IT COULD BE BETTER
     fs::path repo(repoPath);
     fs::path tagFile = repo / tag;

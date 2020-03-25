@@ -42,17 +42,11 @@ int addFunction(Uhh& uhh, const std::string name, const std::vector<std::string>
 
 int findFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
     if (args.size() == 0) {
-        printf("invalid usage ./uhh find {tag} {search} \1");
+        printf("invalid usage ./uhh {tag} {search} \1");
         return 1;
     }
 
-    std::stringstream str;
-
-    for (int i = 1; i < args.size(); ++i) {
-        str << args[i];
-    }
-
-    uhh.find(args[0], str.str());
+    uhh.find(args);
 
     return 0;
 }
@@ -105,8 +99,9 @@ int main(int argc, char **argv) {
         return handler.call(uhh, "help", commandArgs);
     }
 
-    // remove are command
-    commandArgs.erase(commandArgs.begin());
+    if (handler.has(cmd)) {
+        return handler.call(uhh, cmd, commandArgs);
+    }
 
-    return handler.call(uhh, cmd, commandArgs);
+    return handler.call(uhh, "find", commandArgs);
 }

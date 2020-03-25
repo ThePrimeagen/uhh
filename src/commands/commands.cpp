@@ -23,12 +23,16 @@ void Commands::add(const std::string name, const std::string usage, std::functio
 
 const std::optional<CommandInfo> Commands::get(const std::string name) {
     auto found = cmdList.find(name);
-    if (found == cmdList.end())
-    {
+    if (found == cmdList.end()) {
         return {};
     }
 
     return found->second;
+}
+
+const int Commands::has(const std::string name) {
+    auto found = cmdList.find(name);
+    return found != cmdList.end();
 }
 
 const int Commands::call(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
