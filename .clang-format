@@ -1,0 +1,3 @@
+---
+# Disable autoformatting by contributors with clang-format
+DisableFormat: true
