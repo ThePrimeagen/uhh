@@ -5,9 +5,8 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
-#include "git2.h"
-#include "git2/credential.h"
-#include "git2/remote.h"
+#include "uhh-git.h"
+#include <cstring>
 
 namespace fs = std::filesystem;
 
@@ -39,14 +38,21 @@ void Uhh::readPreferences() {
     std::ifstream infile(configPath);
 
     std::string line;
+    config.syncOnAdd = false;
+
     while (std::getline(infile, line)) {
         std::istringstream tokenizer(line);
 
         std::string item, value;
         tokenizer >> item >> value;
 
+        // probably should make this much nicer.......
+        // I hate these things.
         if (item.compare("git") == 0) {
             config.repoUrl = value;
+        }
+        else if (item.compare("sync-on-add")) {
+            config.syncOnAdd = value == "true";
         }
     }
 }
@@ -57,15 +63,6 @@ void dropRepoPath(std::string repoPath) {
     }
 }
 
-int credentials_cb(git_cred **out, const char *url, const char *username_from_url,
-                   unsigned int allowed_types, void *payload) {
-    // allowed_types == bitmask
-    // TODO: Make this work so its like extensibal brah
-    // GIT_CREDTYPE_*
-
-    return git_credential_ssh_key_from_agent(out, username_from_url);
-}
-
 void Uhh::readyGit() {
     if (initialized) {
         return;
@@ -73,22 +70,11 @@ void Uhh::readyGit() {
 
     dropRepoPath(repoPath);
 
-    git_repository *repo = NULL;
-    const char *url = config.repoUrl.c_str();
-    const char *path = repoPath.c_str();
-
-    git_clone_options clone_opts = GIT_STATUS_OPTIONS_INIT;
-    git_fetch_options fetch_opts = GIT_FETCH_OPTIONS_INIT;
-    fetch_opts.callbacks.credentials = credentials_cb;
-
-    clone_opts.fetch_opts = fetch_opts;
-
-    int error = git_clone(&repo, url, path, &clone_opts);
+    int error = Git::clone(config, repoPath);
 
     if (error) {
         dropRepoPath(repoPath);
-        const git_error *e = git_error_last();
-        printf("Error %d/%d: %s\n", error, e->klass, e->message);
+        Git::printError(error);
         exit(error);
     }
 }
@@ -136,6 +122,16 @@ void Uhh::find(const std::vector<std::string>& args) {
     }
 }
 
+void Uhh::sync() {
+    int error = Git::commit(config, repoPath);
+
+    if (error) {
+        printf("You dun messed up with your system commands.  You should probably fix this. (by doing it right).\n");
+        printf("This was during the git commit process, so go look at it: Error code: %d and strerror: %s\n", error, strerror(errno));
+        exit(error);
+    }
+}
+
 void Uhh::addCommand(const std::string& tag, const std::string& cmd, const std::string& note) {
     // TODO: Reserverd words.  You cannot have commands with help, list, update, sync
 
@@ -165,6 +161,11 @@ void Uhh::addCommand(const std::string& tag, const std::string& cmd, const std::
     if (note.back() != '\n') {
         out << '\n';
     }
+    out.close();
+
+    if (config.syncOnAdd) {
+        sync();
+    }
 }
 
 Uhh::Uhh(UhhOpts &opts) {
@@ -177,10 +178,10 @@ Uhh::Uhh(UhhOpts &opts) {
 
     readyDirectory();
     initPreferences();
+    readPreferences();
 
+    git_libgit2_init();
     if (!initialized) {
-        git_libgit2_init();
-        readPreferences();
         readyGit();
     }
 }

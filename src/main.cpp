@@ -25,6 +25,11 @@ int aboutFunction(Uhh& uhh, const std::string name, const std::vector<std::strin
     return 0;
 }
 
+int syncFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
+    uhh.sync();
+    return 0;
+}
+
 int addFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
 
     std::string tag, cmd, note;
@@ -84,6 +89,13 @@ int main(int argc, char **argv) {
     };
     handler + find;
 
+    const CommandInfo sync = {
+        .name = "sync",
+        .usage = "sync",
+        .func = syncFunction,
+    };
+    handler + sync;
+
     std::string home = std::string(getenv("HOME"));
     UhhOpts opts{
         home,
@@ -100,6 +112,7 @@ int main(int argc, char **argv) {
     }
 
     if (handler.has(cmd)) {
+        commandArgs.erase(commandArgs.begin());
         return handler.call(uhh, cmd, commandArgs);
     }
 

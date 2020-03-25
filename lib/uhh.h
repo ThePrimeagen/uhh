@@ -10,6 +10,7 @@ struct UhhOpts {
 
 struct UhhConfig {
     std::string repoUrl;
+    bool syncOnAdd;
 };
 
 class Uhh {
@@ -18,6 +19,7 @@ class Uhh {
 
         void addCommand(const std::string& tag, const std::string& cmd, const std::string& note);
         void find(const std::vector<std::string>& args);
+        void sync();
 
     private:
         bool initialized;
