@@ -8,11 +8,22 @@ Commands::Commands() {
 Commands::~Commands() {
 }
 
-void Commands::add(const std::string name, commandFunction* func) {
-    cmdList[name] = func;
+void Commands::add(const CommandInfo* command) {
+    cmdList[command->name] = command;
 }
 
-commandFunction* Commands::get(const std::string name) {
+void Commands::add(const std::string name, const std::string usage, const commandFunction* func) {
+    const CommandInfo info = {
+            .name = name,
+            .usage = usage,
+            .command = func
+    };
+
+    cmdList[name] = &info;
+}
+
+
+const CommandInfo* Commands::get(const std::string name) {
     if(cmdList.find(name) == cmdList.end()) {
         return nullptr;
     }
@@ -26,13 +37,13 @@ int Commands::get(const std::string name, std::vector<std::string> argv) {
         return 0;
     }
 
-    return cmd(argv);
+    return cmd->command(argv);
 }
 
-commandFunction* Commands::operator[](const std::string name) {
+const CommandInfo* Commands::operator[](const std::string name) {
     return get(name);
 }
 
-void Commands::operator +(std::tuple<std::string, commandFunction*> newFunc) {
-    add(std::get<0>(newFunc), std::get<1>(newFunc));
+void Commands::operator +(const CommandInfo* command) {
+    add(command);
 }

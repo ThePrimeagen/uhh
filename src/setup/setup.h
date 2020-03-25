@@ -4,7 +4,6 @@
 
 struct UhhOpts {
     std::string basePath;
-    std::string command;
     bool verbose = false;
 };
 
