@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include "setup/setup.h"
+#include "commands/commands.h"
 
 std::vector<std::string> helps {
     "uhh",
@@ -14,20 +15,21 @@ std::vector<std::string> helps {
     "wut",
 };
 
-void printHelp() {
+
+int helpFunction(char **argv) {
     printf("Look, its a help menu\n");
+    return 1;
 }
 
 int main(int argc, char** argv) {
+    cd .
     if (argc < 2) {
-        printHelp();
-        return 0;
+        return handler["help"](argv);
     }
 
     std::string cmd(argv[1]);
     if (std::find(helps.begin(), helps.end(), cmd.c_str()) != helps.end()) {
-        printHelp();
-        return 0;
+        return handler["help"](argv);
     }
 
     std::string home = std::string(getenv("HOME"));
@@ -38,6 +40,11 @@ int main(int argc, char** argv) {
 
     Uhh uhh{opts};
 
+    if(handler.get(cmd, argv) == 0) {
+        return 1;
+    }
+    
+    /*
     if (cmd.compare("add") == 0) {
         std::string tag, cmd, note;
         std::cout << "What is the tag? ";
@@ -62,6 +69,8 @@ int main(int argc, char** argv) {
 
         uhh.find(cmd, str.str());
     }
+    */
 
+    
     return 0;
 }

@@ -3,19 +3,19 @@
 #include <map> 
 #include <string>
 
-typedef int commandFunction(const char**);
+typedef int commandFunction(char**);
 
-class commands {
+class Commands {
     private:
         std::map<std::string, commandFunction*> cmdList;
 
     public:
-        commands();
-        ~commands();
+        Commands();
+        ~Commands();
         void add(const std::string name, commandFunction* func);
         commandFunction* get(const std::string name);
         // call function
-        int get(const std::string name, const char**);
+        int get(const std::string name, char**);
 
     // Operator overloading
     public:

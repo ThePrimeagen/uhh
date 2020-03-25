@@ -1,19 +1,18 @@
-#include "commands.h";
+#include "commands.h"
 
-
-commands::commands() {
+Commands::Commands() {
     cmdList = {};
 }
 
 // TODO: destory command list on close
-commands::~commands() {
+Commands::~Commands() {
 }
 
-void commands::add(const std::string name, commandFunction* func) {
+void Commands::add(const std::string name, commandFunction* func) {
     cmdList[name] = func;
 }
 
-commandFunction* commands::get(const std::string name) {
+commandFunction* Commands::get(const std::string name) {
     if(cmdList.find(name) == cmdList.end()) {
         return nullptr;
     }
@@ -21,7 +20,7 @@ commandFunction* commands::get(const std::string name) {
     return cmdList.find(name)->second;
 }
 
-int commands::get(const std::string name, const char** argv) {
+int Commands::get(const std::string name, char** argv) {
     auto cmd = get(name);
     if(cmd == nullptr) {
         return 0;
@@ -30,10 +29,10 @@ int commands::get(const std::string name, const char** argv) {
     return cmd(argv);
 }
 
-commandFunction* commands::operator[](const std::string name) {
+commandFunction* Commands::operator[](const std::string name) {
     return get(name);
 }
 
-void commands::operator +(std::tuple<std::string, commandFunction*> newFunc) {
+void Commands::operator +(std::tuple<std::string, commandFunction*> newFunc) {
     add(std::get<0>(newFunc), std::get<1>(newFunc));
 }
