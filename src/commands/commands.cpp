@@ -35,7 +35,7 @@ const CommandInfo Commands::get(const std::string name) {
 
 const int Commands::call(const std::string name, const std::vector<std::string> args) {
     if(cmdList.find(name) == cmdList.end()) {
-        return NULL;
+        return 1;
     }
 
     return cmdList.find(name)->second.func(args);
