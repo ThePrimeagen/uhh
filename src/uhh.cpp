@@ -15,19 +15,19 @@ std::vector<std::string> helps{
     "wut",
 };
 
-int helpFunction(const std::vector<std::string> args)
+int helpFunction(const std::string name, const std::vector<std::string> args)
 {
     printf("Look, its a help menu\n");
     return 0;
 }
 
-int aboutFunction(const std::vector<std::string> args)
+int aboutFunction(const std::string name, const std::vector<std::string> args)
 {
     printf("Uhh created by ThePrimeagen @ https://github.com/ThePrimeagen/uhh\n");
     return 0;
 }
 
-int addFunction(const std::vector<std::string> args)
+int addFunction(const std::string name, const std::vector<std::string> args)
 {
     std::string home = std::string(getenv("HOME"));
     UhhOpts opts{
@@ -49,9 +49,10 @@ int addFunction(const std::vector<std::string> args)
     return 0;
 }
 
-int findFunction(const std::vector<std::string> args)
-{   
-    if(args.size() == 0) {
+int findFunction(const std::string name, const std::vector<std::string> args)
+{
+    if (args.size() == 0)
+    {
         printf("invalid usage ./uhh find {tag} {search} \1");
         return 1;
     }
@@ -111,22 +112,17 @@ int main(int argc, char **argv)
 
     if (commandArgs.size() == 0)
     {
-        return handler["help"].func(commandArgs);
+        return handler.call("help", commandArgs);
     }
 
     std::string cmd(commandArgs[0]);
     if (std::find(helps.begin(), helps.end(), cmd.c_str()) != helps.end())
     {
-        return handler["help"].func(commandArgs);
+        return handler.call("help", commandArgs);
     }
 
     // remove are command
     commandArgs.erase(commandArgs.begin());
-    auto cmdInfo = handler[cmd];
-    if(cmdInfo.func == nullptr) {
-        printf("error %s does not exist", cmd.c_str());
-        return 1;
-    }
 
-    return cmdInfo.func(commandArgs);
+    return handler.call(cmd, commandArgs);
 }

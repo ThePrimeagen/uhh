@@ -4,8 +4,9 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <optional>
 
-typedef int commandFunction(const std::vector<std::string>);
+typedef int commandFunction(const std::string command, const std::vector<std::string>);
 
 struct CommandInfo {
     const std::string name; 
@@ -23,11 +24,14 @@ class Commands {
         void add(const CommandInfo command);
         void add(const std::string name, const std::string usage, std::function<commandFunction> func);
 
-        const CommandInfo get(const std::string name);
+        const std::optional<CommandInfo> get(const std::string name);
         const int call(const std::string name, const std::vector<std::string> args);
 
     // Operator overloading
     public:
         const CommandInfo operator [](const std::string name);
         void operator +(const CommandInfo command);
+    
+    private:
+        static int notFoundFunction(const std::string command, const std::vector<std::string> args);
 };
