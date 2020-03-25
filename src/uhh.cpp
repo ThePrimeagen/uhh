@@ -22,7 +22,9 @@ int helpFunction(char **argv) {
 }
 
 int main(int argc, char** argv) {
-    cd .
+    Commands handler;
+    handler + std::make_tuple("help", &helpFunction);
+
     if (argc < 2) {
         return handler["help"](argv);
     }
