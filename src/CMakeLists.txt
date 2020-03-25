@@ -1,12 +1,12 @@
-add_subdirectory(setup)
+add_subdirectory(uhh)
 add_subdirectory(commands)
 
-list(APPEND EXTRA_LIBS setup)
+list(APPEND EXTRA_LIBS uhh-class)
 list(APPEND EXTRA_LIBS commands)
 list(APPEND EXTRA_LIBS stdc++fs)
 list(APPEND EXTRA_LIBS git2)
 
-add_executable(uhh uhh.cpp)
+add_executable(uhh main.cpp)
 
 # add the executable
 set_property(TARGET uhh PROPERTY CXX_STANDARD 17)

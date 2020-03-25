@@ -1,4 +1,4 @@
-add_library(commands commands.cpp commands.h)
+add_library(commands commands.cpp)
 
 target_include_directories(commands INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}

@@ -2,8 +2,8 @@
 #include <algorithm>
 #include <iostream>
 #include <sstream>
-#include "setup/setup.h"
-#include "commands/commands.h"
+#include "uhh.h"
+#include "commands.h"
 
 std::vector<std::string> helps{
     "uhh",
@@ -15,26 +15,17 @@ std::vector<std::string> helps{
     "wut",
 };
 
-int helpFunction(const std::string name, const std::vector<std::string> args)
-{
+int helpFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
     printf("Look, its a help menu\n");
     return 0;
 }
 
-int aboutFunction(const std::string name, const std::vector<std::string> args)
-{
+int aboutFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
     printf("Uhh created by ThePrimeagen @ https://github.com/ThePrimeagen/uhh\n");
     return 0;
 }
 
-int addFunction(const std::string name, const std::vector<std::string> args)
-{
-    std::string home = std::string(getenv("HOME"));
-    UhhOpts opts{
-        home,
-    };
-
-    Uhh uhh{opts};
+int addFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
 
     std::string tag, cmd, note;
     std::cout << "What is the tag? ";
@@ -49,25 +40,15 @@ int addFunction(const std::string name, const std::vector<std::string> args)
     return 0;
 }
 
-int findFunction(const std::string name, const std::vector<std::string> args)
-{
-    if (args.size() == 0)
-    {
+int findFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
+    if (args.size() == 0) {
         printf("invalid usage ./uhh find {tag} {search} \1");
         return 1;
     }
 
-    std::string home = std::string(getenv("HOME"));
-    UhhOpts opts{
-        home,
-    };
-
-    Uhh uhh{opts};
-
     std::stringstream str;
 
-    for (int i = 1; i < args.size(); ++i)
-    {
+    for (int i = 1; i < args.size(); ++i) {
         str << args[i];
     }
 
@@ -76,8 +57,7 @@ int findFunction(const std::string name, const std::vector<std::string> args)
     return 0;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     std::vector<std::string> commandArgs(argv + 1, argv + argc);
     Commands handler;
 
@@ -110,19 +90,23 @@ int main(int argc, char **argv)
     };
     handler + find;
 
-    if (commandArgs.size() == 0)
-    {
-        return handler.call("help", commandArgs);
+    std::string home = std::string(getenv("HOME"));
+    UhhOpts opts{
+        home,
+    };
+    Uhh uhh(opts);
+
+    if (commandArgs.size() == 0) {
+        return handler.call(uhh, "help", commandArgs);
     }
 
     std::string cmd(commandArgs[0]);
-    if (std::find(helps.begin(), helps.end(), cmd.c_str()) != helps.end())
-    {
-        return handler.call("help", commandArgs);
+    if (std::find(helps.begin(), helps.end(), cmd.c_str()) != helps.end()) {
+        return handler.call(uhh, "help", commandArgs);
     }
 
     // remove are command
     commandArgs.erase(commandArgs.begin());
 
-    return handler.call(cmd, commandArgs);
+    return handler.call(uhh, cmd, commandArgs);
 }
