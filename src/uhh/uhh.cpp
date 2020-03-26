@@ -66,18 +66,6 @@ void Uhh::readyGit() {
     }
 }
 
-std::string Uhh::get(const std::string tag) {
-    fs::path repo(repoPath);
-    fs::path tagFile = repo / tag;
-
-    if (fs::is_regular_file(tagFile)) {
-        return tagFile;
-    }
-
-    printf("No Entries found for %s\n", tag.c_str());
-    return "";
-}
-
 void Uhh::find(const std::vector<std::string>& args) {
     int ptr = 0;
     std::string tag = args[ptr++];
@@ -138,22 +126,29 @@ void Uhh::addCommand(const std::string& tag, const std::string& cmd, const std::
     fs::path repo(repoPath);
     fs::path tagFile = repo / tag;
 
-    Config cfg{ tagFile };
+    std::ofstream out;
+
     if (fs::is_regular_file(tagFile)) {
-        if(!cfg.load()) {
-            throw std::runtime_error("Could not open file");
-        }
+        out.open(tagFile, std::ios::app);
+    } else {
+        std::ofstream ofs(tagFile);
+        out.open(tagFile, std::ios::app);
     }
 
+    if (!out.good()) {
+        throw std::runtime_error("Could not open file");
+    }
+
+    out << cmd;
     if (cmd.back() != '\n') {
-        cfg.set("command", cmd);
+        out << '\n';
     }
 
+    out << note;
     if (note.back() != '\n') {
-        cfg.set("note", note);
+        out << '\n';
     }
-
-    cfg.save();
+    out.close();
 
     if (config.syncOnAdd) {
         sync();
