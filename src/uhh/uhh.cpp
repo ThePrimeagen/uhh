@@ -1,12 +1,13 @@
 #include "uhh.h"
 
-#include <string>
-#include <filesystem>
-#include <vector>
-#include <fstream>
-#include <iostream>
+#include "uhh-config.h"
 #include "uhh-git.h"
 #include <cstring>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
 namespace fs = std::filesystem;
 
@@ -23,38 +24,24 @@ void Uhh::initPreferences() {
         return;
     }
 
-    std::ofstream ofs(configPath);
-
     std::string gitRepo;
     std::cout << "Create config, please enter your git repo:";
     std::cin >> gitRepo;
 
-    // git@github.com:ThePrimeagen/one-liners.git
-    ofs << "git " << gitRepo << "\n";
-    ofs.close();
+   Config cfg{configPath};
+   cfg.set("repo", gitRepo);
+
+   cfg.save();
 }
 
 void Uhh::readPreferences() {
-    std::ifstream infile(configPath);
-
-    std::string line;
-    config.syncOnAdd = false;
-
-    while (std::getline(infile, line)) {
-        std::istringstream tokenizer(line);
-
-        std::string item, value;
-        tokenizer >> item >> value;
-
-        // probably should make this much nicer.......
-        // I hate these things.
-        if (item.compare("git") == 0) {
-            config.repoUrl = value;
-        }
-        else if (item.compare("sync-on-add")) {
-            config.syncOnAdd = value == "true";
-        }
+    Config cfg {configPath};
+    if(!cfg.load()) {
+        throw std::runtime_error("Could not open file");
     }
+
+    config.repoUrl = cfg["repo"];
+    config.syncOnAdd = cfg["sync-on-add"] == "true";
 }
 
 void dropRepoPath(std::string repoPath) {
@@ -77,6 +64,18 @@ void Uhh::readyGit() {
         Git::printError(error);
         exit(error);
     }
+}
+
+std::string Uhh::get(const std::string tag) {
+    fs::path repo(repoPath);
+    fs::path tagFile = repo / tag;
+
+    if (fs::is_regular_file(tagFile)) {
+        return tagFile;
+    }
+
+    printf("No Entries found for %s\n", tag.c_str());
+    return "";
 }
 
 void Uhh::find(const std::vector<std::string>& args) {
@@ -139,29 +138,22 @@ void Uhh::addCommand(const std::string& tag, const std::string& cmd, const std::
     fs::path repo(repoPath);
     fs::path tagFile = repo / tag;
 
-    std::ofstream out;
-
+    Config cfg{ tagFile };
     if (fs::is_regular_file(tagFile)) {
-        out.open(tagFile, std::ios::app);
-    } else {
-        std::ofstream ofs(tagFile);
-        out.open(tagFile, std::ios::app);
+        if(!cfg.load()) {
+            throw std::runtime_error("Could not open file");
+        }
     }
 
-    if (!out.good()) {
-        throw std::runtime_error("Could not open file");
-    }
-
-    out << cmd;
     if (cmd.back() != '\n') {
-        out << '\n';
+        cfg.set("command", cmd);
     }
 
-    out << note;
     if (note.back() != '\n') {
-        out << '\n';
+        cfg.set("note", note);
     }
-    out.close();
+
+    cfg.save();
 
     if (config.syncOnAdd) {
         sync();

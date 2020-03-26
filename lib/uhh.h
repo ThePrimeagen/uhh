@@ -19,6 +19,7 @@ class Uhh {
 
         void addCommand(const std::string& tag, const std::string& cmd, const std::string& note);
         void find(const std::vector<std::string>& args);
+        std::string get(const std::string tag);
         void sync();
 
     private:

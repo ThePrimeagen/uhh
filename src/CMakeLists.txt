@@ -1,10 +1,12 @@
 add_subdirectory(uhh)
 add_subdirectory(commands)
 add_subdirectory(git)
+add_subdirectory(config)
 
 list(APPEND EXTRA_LIBS uhh-class)
 list(APPEND EXTRA_LIBS commands)
 list(APPEND EXTRA_LIBS uhh-git)
+list(APPEND EXTRA_LIBS config-class)
 list(APPEND EXTRA_LIBS stdc++fs)
 list(APPEND EXTRA_LIBS git2)
 
