@@ -83,14 +83,13 @@ void Uhh::find(const std::vector<std::string>& args) {
         return;
     }
 
-
     std::vector<std::string> needle(args.begin() + 1, args.end());
     std::string cmd, note;
 
     while (std::getline(in, cmd) && std::getline(in, note)) {
         if (!needle.empty()) {
             bool found = true;
-            for (int i = ptr; found && i < needle.size(); ++i) {
+            for (int i = 0; found && i < needle.size(); ++i) {
                 found = !(cmd.find(needle[i]) == std::string::npos &&
                     note.find(needle[i]) == std::string::npos);
             }

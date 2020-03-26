@@ -25,8 +25,6 @@ bool Config::load() {
             auto name = line.substr(0, delimiterPos);
             auto value = line.substr(delimiterPos + 1);
 
-            std::cout << name << ":" << value << "\n";
-
             values[name] = value;
         }
 
