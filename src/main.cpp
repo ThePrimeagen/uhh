@@ -4,6 +4,7 @@
 #include <sstream>
 #include "uhh.h"
 #include "commands.h"
+#include "uhh-config.h"
 
 std::vector<std::string> helps{
     "uhh",
@@ -28,6 +29,24 @@ int aboutFunction(Uhh& uhh, const std::string name, const std::vector<std::strin
 int syncFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
     uhh.sync();
     return 0;
+}
+
+int runFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
+    if (args.size() == 0) {
+        printf("invalid usage ./uhh run {tag} \n");
+        return 1;
+    }
+    
+    auto tagFile = uhh.get(args[0]);
+    Config cfg{tagFile};
+    if(!cfg.load()) {
+        printf("failed to load tag file\n");
+        return 1;
+    }
+
+    std::cout << "Running command: " << cfg["command"] << "\n";
+    
+    return system(cfg["command"].c_str());
 }
 
 int addFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
@@ -95,6 +114,13 @@ int main(int argc, char **argv) {
         .func = syncFunction,
     };
     handler + sync;
+
+    const CommandInfo run = {
+        .name = "run",
+        .usage = "run <tagname>",
+        .func = runFunction,
+    };
+    handler + run;
 
     std::string home = std::string(getenv("HOME"));
     UhhOpts opts{

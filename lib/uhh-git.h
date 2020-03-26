@@ -1,3 +1,5 @@
+#pragma once
+
 #include "uhh.h"
 #include "git2.h"
 #include "git2/credential.h"
