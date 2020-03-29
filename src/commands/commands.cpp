@@ -2,8 +2,7 @@
 #include "commands.h"
 #include "iostream"
 
-Commands::Commands() {
-    cmdList = {};
+Commands::Commands() : cmdList{} {
 }
 
 void Commands::add(const CommandInfo command) {

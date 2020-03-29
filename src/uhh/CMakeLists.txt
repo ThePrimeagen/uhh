@@ -2,6 +2,8 @@ add_library(uhh-class uhh.cpp)
 
 list(APPEND EXTRA_LIBS stdc++fs)
 list(APPEND EXTRA_LIBS git2::git2)
+list(APPEND EXTRA_LIBS config-class)
+list(APPEND EXTRA_LIBS uhh-git)
 
 target_link_libraries(uhh-class PUBLIC
     ${EXTRA_LIBS}
