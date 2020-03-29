@@ -63,7 +63,6 @@ int main(int argc, char **argv) {
     std::vector<std::string> commandArgs(argv + 1, argv + argc);
     Commands handler;
 
-    // TODO: make this a macro someday...
     const CommandInfo help = buildCommand("help", "help", helpFunction);
     handler + help;
 
