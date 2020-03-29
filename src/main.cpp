@@ -57,44 +57,26 @@ int findFunction(Uhh& uhh, const std::string name, const std::vector<std::string
     return 0;
 }
 
+#define buildCommand(name, usage, function) {name, usage, function}
+
 int main(int argc, char **argv) {
     std::vector<std::string> commandArgs(argv + 1, argv + argc);
     Commands handler;
 
     // TODO: make this a macro someday...
-    const CommandInfo help = {
-        .name = "help",
-        .usage = "help",
-        .func = helpFunction,
-    };
+    const CommandInfo help = buildCommand("help", "help", helpFunction);
     handler + help;
 
-    const CommandInfo about = {
-        .name = "about",
-        .usage = "about",
-        .func = aboutFunction,
-    };
+    const CommandInfo about = buildCommand("about", "about", aboutFunction);
     handler + about;
 
-    const CommandInfo add = {
-        .name = "add",
-        .usage = "add",
-        .func = addFunction,
-    };
+    const CommandInfo add = buildCommand("add", "add", addFunction);
     handler + add;
 
-    const CommandInfo find = {
-        .name = "find",
-        .usage = "find",
-        .func = findFunction,
-    };
+    const CommandInfo find = buildCommand("find", "find", findFunction);
     handler + find;
 
-    const CommandInfo sync = {
-        .name = "sync",
-        .usage = "sync",
-        .func = syncFunction,
-    };
+    const CommandInfo sync = buildCommand("sync", "sync", syncFunction);
     handler + sync;
 
     std::string home = std::string(getenv("HOME"));
