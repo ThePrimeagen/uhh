@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -154,11 +155,39 @@ void Uhh::addCommand(const std::string& tag, const std::string& cmd, const std::
     }
 }
 
+void Uhh::findConfigDirectory() {
+    char* configDir;
+    if ((configDir = getenv("UHH_DIR")) != nullptr) {
+        if (fs::is_directory(configDir))
+            this->dir = std::string(configDir);
+        else {
+            std::cout << configDir << " is not a valid directory." << std::endl
+                << "Make sure to set the UHH_DIR environment variable to a valid value in " << std::endl
+                << "your shell startup file (~/.bashrc, ~/.zshrc, etc) or in your ~/.profile, e.g." << std::endl
+                << "export UHH_DIR=\u001b[31m<your desired path>\u001b[0m" << std::endl;
+            exit(1);
+        }
+
+    }
+    else if ((configDir = getenv("XDG_CONFIG_HOME")) != nullptr) {
+        if (fs::is_directory(configDir))
+            this->dir = std::string(configDir) + "/uhh";
+        else {
+            std::cout << "Your \u001b[31mXDG_CONFIG_HOME\u001b[0m variable is currently \u001b[31m" <<
+                configDir << "\u001b[0m, but it is not a valid directory." << std::endl
+                << "Please make the directory and try again." << std::endl;
+            exit(1);
+        }
+    }
+    else {
+        this->dir = std::string(this->options.basePath) + "/.config/uhh";
+    }
+}
+
 Uhh::Uhh(UhhOpts &opts) {
-    options = opts;
-    dir = opts.basePath + "/.uhh";
-    configPath = dir + "/.config";
-    repoPath = dir + "/repo";
+    this->options = opts;
+
+    findConfigDirectory();
 
     initialized = fs::is_directory(repoPath);
 
