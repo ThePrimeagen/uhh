@@ -187,7 +187,7 @@ void Uhh::findConfigDirectory() {
 Uhh::Uhh(UhhOpts &opts) {
     this->options = opts;
 
-    findDirectory();
+    findConfigDirectory();
 
     initialized = fs::is_directory(repoPath);
 
