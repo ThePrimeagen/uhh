@@ -35,4 +35,5 @@ class Uhh {
         void initPreferences();
         void readPreferences();
         void readyGit();
+        void findConfigDirectory();
 };
