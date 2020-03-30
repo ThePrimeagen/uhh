@@ -15,8 +15,20 @@ $ cmake .. && make
 ```
 
 ### Usage
-uhh [options] {cmd/token} {searching tokens}
 
+#### Directories
+Uhh looks at the environment variables `UHH_DIR` and `XDG_CONFIG_HOME` to determine
+where it should put its files on its first run. `UHH_DIR` should be an already
+existing folder where you wish all of Uhh's resources to be put, while
+`XDG_CONFIG_HOME` should be the parent folder where Uhh will make a folder for
+itself called `uhh`.
+
+If neither of these are defined, Uhh defaults to `$HOME/.config/uhh`.
+
+#### Basic Usage
+`uhh [options] {cmd/token} {searching tokens}`
+
+```
 uhh uhh = help
 uhh wat = help
 uhh huh = help
@@ -50,6 +62,6 @@ uhh tcpdump
 uhh -F
   "onteuhone"
   perf -F
-
+```
 
 
