@@ -2,6 +2,7 @@ add_subdirectory(uhh)
 add_subdirectory(commands)
 add_subdirectory(git)
 add_subdirectory(config)
+add_subdirectory(term)
 
 list(APPEND EXTRA_LIBS uhh-class)
 list(APPEND EXTRA_LIBS commands)
