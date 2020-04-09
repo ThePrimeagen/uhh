@@ -11,7 +11,10 @@ class Config {
         std::map<std::string, std::string> values;
         std::string file;
     public:
-        Config(std::string file) { this->file = file; this->values = {}; }
+        Config(std::string file) {
+            this->file = file;
+            this->values = {};
+        }
 
         void set(std::string key, std::string value);
         std::string get(std::string key);

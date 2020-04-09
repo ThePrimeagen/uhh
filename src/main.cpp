@@ -46,9 +46,18 @@ int addFunction(Uhh& uhh, const std::string name, const std::vector<std::string>
     return 0;
 }
 
+// TODO: key words for find and add
+int deleteFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
+    if (args.size() == 0) {
+        printf("invalid usage ./uhh delete {search tokens} \n");
+        return 1;
+    }
+    return 0;
+}
+
 int findFunction(Uhh& uhh, const std::string name, const std::vector<std::string> args) {
     if (args.size() == 0) {
-        printf("invalid usage ./uhh {tag} {search} \1");
+        printf("invalid usage ./uhh {tag} {search tokens} \n");
         return 1;
     }
 
@@ -77,6 +86,9 @@ int main(int argc, char **argv) {
 
     const CommandInfo sync = buildCommand("sync", "sync", syncFunction);
     handler + sync;
+
+    const CommandInfo deleteFn = buildCommand("delete", "delete", deleteFunction);
+    handler + deleteFn;
 
     std::string home = std::string(getenv("HOME"));
     UhhOpts opts{

@@ -1,7 +1,12 @@
 #pragma once
 
+#include <memory>
+#include <iostream>
 #include <vector>
+#include <filesystem>
 #include <string>
+
+namespace fs = std::filesystem;
 
 struct UhhOpts {
     std::string basePath;
@@ -13,13 +18,19 @@ struct UhhConfig {
     bool syncOnAdd;
 };
 
+using std::unique_ptr;
+using std::vector;
+using std::string;
+using std::ifstream;
+
 class Uhh {
     public:
         Uhh(UhhOpts& opts);
 
-        void addCommand(const std::string& tag, const std::string& cmd, const std::string& note);
-        void find(const std::vector<std::string>& args);
+        void addCommand(const string& tag, const string& cmd, const string& note);
+        void find(const vector<string>& args);
         void sync();
+        void deleteFn(const vector<string>& args);
 
     private:
         bool initialized;
@@ -27,13 +38,16 @@ class Uhh {
         UhhOpts options;
         UhhConfig config;
 
-        std::string dir;
-        std::string configPath;
-        std::string repoPath;
+        fs::path dir;
+        fs::path configPath;
+        fs::path repoPath;
 
         void readyDirectory();
         void initPreferences();
         void readPreferences();
         void readyGit();
         void findConfigDirectory();
+
+        unique_ptr<vector<string>> getSearchResults(unique_ptr<ifstream>, vector<string>&);
+        unique_ptr<ifstream> getTagFile(string&);
 };

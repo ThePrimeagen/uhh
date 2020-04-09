@@ -4,14 +4,7 @@
 #include <sstream>
 #include <stdlib.h>
 
-int credentials_cb(git_cred **out, const char *url, const char *username_from_url,
-                   unsigned int allowed_types, void *payload) {
-    // allowed_types == bitmask
-    // TODO: Make this work so its like extensibal brah
-    // GIT_CREDTYPE_*
-
-    return git_credential_ssh_key_from_agent(out, username_from_url);
-}
+namespace fs = std::filesystem;
 
 int Git::commit(const UhhConfig& config, const std::string& repoPath) {
 
@@ -91,7 +84,8 @@ int Git::commit(const UhhConfig& config, const std::string& repoPath) {
     */
 }
 
-int Git::clone(const UhhConfig& config, const std::string& repoPath) {
+int Git::clone(const fs::path& configPath, const std::string& repoUrl) {
+    /*
     git_repository *repo = NULL;
     const char *url = config.repoUrl.c_str();
     const char *path = repoPath.c_str();
@@ -103,6 +97,11 @@ int Git::clone(const UhhConfig& config, const std::string& repoPath) {
     clone_opts.fetch_opts = fetch_opts;
 
     return git_clone(&repo, url, path, &clone_opts);
+    */
+
+    std::stringstream clone;
+    clone << "cd " << configPath << " && git clone " << repoUrl << " repo";
+    return system(clone.str().c_str());
 }
 
 void Git::printError(int error) {

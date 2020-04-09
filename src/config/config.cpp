@@ -35,13 +35,13 @@ bool Config::load() {
 }
 
 void Config::save() {
+    std::cout << "Here is the file" << this->file << "\n";
+
     std::ofstream myfile (this->file);
-    if (myfile.is_open())
-    {
+    if (myfile.is_open()) {
         auto it = values.begin();
 
-        while (it != values.end())
-        {
+        while (it != values.end()) {
             std::string name = it->first;
             std::string value = it->second;
 
