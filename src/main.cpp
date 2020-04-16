@@ -52,6 +52,7 @@ int deleteFunction(Uhh& uhh, const std::string name, const std::vector<std::stri
         printf("invalid usage ./uhh delete {search tokens} \n");
         return 1;
     }
+    uhh.deleteFn(args);
     return 0;
 }
 
@@ -87,6 +88,8 @@ int main(int argc, char **argv) {
     const CommandInfo sync = buildCommand("sync", "sync", syncFunction);
     handler + sync;
 
+    // GOING PEE PEE, Dont worry i wont wash the hands...
+    // oeuntonteuhntoehunotehu
     const CommandInfo deleteFn = buildCommand("delete", "delete", deleteFunction);
     handler + deleteFn;
 

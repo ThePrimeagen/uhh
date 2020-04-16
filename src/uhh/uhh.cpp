@@ -13,6 +13,8 @@
 
 namespace fs = std::filesystem;
 
+typedef std::unique_ptr<std::vector<std::string>> SearchResults;
+
 void Uhh::readyDirectory() {
     if (fs::is_directory(dir)) {
         return;
@@ -67,38 +69,39 @@ void Uhh::readyGit() {
     }
 }
 
-std::unique_ptr<std::vector<std::string>> Uhh::getSearchResults(
-        std::unique_ptr<std::ifstream> file, std::vector<std::string>& tokens) {
+SearchResults Uhh::getSearchResults(
+        std::ifstream* file,
+        std::vector<std::string>& tokens,
+        bool filterOut = false) {
 
     std::string cmd, note;
     std::unique_ptr<std::vector<std::string>> foundLines(
             new std::vector<std::string>());
 
     while (std::getline(*file, cmd) && std::getline(*file, note)) {
-        if (!tokens.empty()) {
-
-            bool found = true;
-            for (int i = 0; found && i < tokens.size(); ++i) {
-                found = !(cmd.find(tokens[i]) == std::string::npos &&
+        bool found = true;
+        for (int i = 0; found && i < tokens.size(); ++i) {
+            found = !(cmd.find(tokens[i]) == std::string::npos &&
                     note.find(tokens[i]) == std::string::npos);
-            }
-
-            if (!found) {
-                continue;
-            }
         }
+
+        if ((filterOut && found) || (!filterOut && !found)) {
+            continue;
+        }
+
+        foundLines->push_back(cmd);
+        foundLines->push_back(note);
     }
 
     return foundLines;
 }
 
 std::unique_ptr<std::ifstream> Uhh::getTagFile(std::string& tagName) {
-    fs::path repo(repoPath);
-    fs::path tagFile = repo / tagName;
+    fs::path tagFile = repoPath / tagName;
 
     if (fs::is_regular_file(tagFile)) {
         std::unique_ptr<std::ifstream> ptr(new std::ifstream(tagFile));
-        return ptr;
+        return std::move(ptr);
     }
 
     return nullptr;
@@ -113,6 +116,41 @@ void Uhh::deleteFn(const std::vector<std::string>& args) {
         printf("No Entries found for %s\n", tag.c_str());
         return;
     }
+
+    std::vector<std::string> tokens(args.begin() + 1, args.end());
+
+    // TODO: Stop being so bad at this. And just return the results you want.
+    // TODO: Please stop being such this.
+
+    std::ifstream* f = file.get();
+    SearchResults res = getSearchResults(f, tokens, true);
+    std::cout << "About to start over???\n";
+    file->seekg(0, std::ios::beg); // THIS DID NOT WORKC>NCON>EHUNTOEHJUNTO
+    std::cout << "About to start over???\n";
+    SearchResults deleted = getSearchResults(f, tokens);
+    std::cout << "About to start over???\n";
+    file->close();
+
+    std::cout << "Are you sure you want to delete the following items?\n";
+    for (auto it : *deleted) {
+        std::cout << it;
+    }
+
+    std::cout << "y for yes, everything else will throw an error.";
+    std::string in;
+    std::cin >> in;
+
+    if (in != "y") {
+        throw std::runtime_error("You couldn't help yourself could you?");
+    }
+
+    std::ofstream out(repoPath / tag);
+    for (auto it : *res) {
+        out << it;
+    }
+
+    out.flush();
+    out.close();
 }
 
 void Uhh::find(const std::vector<std::string>& args) {
@@ -126,8 +164,22 @@ void Uhh::find(const std::vector<std::string>& args) {
         return;
     }
 
-    std::vector<std::string> needle(args.begin() + 1, args.end());
+    std::vector<std::string> tokens(args.begin() + 1, args.end());
 
+    SearchResults res = getSearchResults(file.get(), tokens);
+
+    for (int i = 0; i < res->size(); i += 2) {
+        if (i > 0) {
+            printf("\n");
+        }
+
+        std::string cmd = res->at(i);
+        if (cmd.back() == '\n') {
+            cmd = cmd.substr(0, cmd.size() - 1);
+        }
+
+        printf("%s", cmd.c_str());
+    }
 }
 
 void Uhh::sync() {

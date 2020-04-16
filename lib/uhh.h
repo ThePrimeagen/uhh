@@ -48,6 +48,6 @@ class Uhh {
         void readyGit();
         void findConfigDirectory();
 
-        unique_ptr<vector<string>> getSearchResults(unique_ptr<ifstream>, vector<string>&);
+        unique_ptr<vector<string>> getSearchResults(ifstream*, vector<string>&, bool);
         unique_ptr<ifstream> getTagFile(string&);
 };
