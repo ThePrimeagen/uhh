@@ -4,19 +4,13 @@ import (
     "io/ioutil"
     "strings"
     "path"
+    "uhh/internal/types"
     "golang.org/x/crypto/ssh/terminal"
     "os"
     "os/exec"
     "log"
     "fmt"
 )
-
-type UhhConfig struct {
-    Uhh string
-    Config string
-    Repo string
-    Values map[string]string
-}
 
 func readConfig() {
     dat, err := ioutil.ReadFile("/tmp/dat")
@@ -28,7 +22,7 @@ func readConfig() {
     fmt.Print(string(dat))
 }
 
-func InitConfig()  UhhConfig {
+func InitConfig() types.UhhConfig {
     config, err := os.UserConfigDir()
 
     if err != nil {
