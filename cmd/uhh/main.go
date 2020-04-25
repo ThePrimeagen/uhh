@@ -1,35 +1,31 @@
 package main
 
 import (
-    "uhh/internal/config"
-    "uhh/internal/types"
     "os"
+    "github.com/theprimeagen/uhh/internal/add"
+    "github.com/theprimeagen/uhh/internal/find"
+    "github.com/theprimeagen/uhh/internal/delete"
+    "github.com/theprimeagen/uhh/internal/config"
+    "github.com/theprimeagen/uhh/internal/types"
 )
 
-func contains(arr []string, str string) bool {
-   for _, a := range arr {
-      if a == str {
-         return true
-      }
-   }
-   return false
+var functions map[string]types.CmdFunc = map[string]types.CmdFunc{
+    "add": add.Add,
+    "delete": delete.Delete,
 }
 
-var functions map[string]types.CmdFunc
-
 func main() {
-    functions = map[string]types.CmdFunc{}
 
     c := config.InitConfig();
-    args := os.Args
+    args := os.Args[1:]
     cmd := args[0]
-    args = args[1:]
 
     function, ok := functions[cmd]
+
     if !ok {
-        // search
+        find.FindAndPrint(&c, args)
     } else {
-        function(&c, args)
+        function(&c, args[1:])
     }
 }
 

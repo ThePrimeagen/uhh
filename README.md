@@ -2,6 +2,12 @@
 When you keep forgetting those sweet sweet sweet sweet commands.
 
 # Requirements
+golang
+
+# TODO
+* help menu
+* clean up this raggity ass readme
+* "idiomatic go"
 
 # How to build
 TODO:

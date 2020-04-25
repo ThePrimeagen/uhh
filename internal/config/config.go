@@ -4,7 +4,7 @@ import (
     "io/ioutil"
     "strings"
     "path"
-    "uhh/internal/types"
+    "github.com/theprimeagen/uhh/internal/types"
     "golang.org/x/crypto/ssh/terminal"
     "os"
     "os/exec"
@@ -22,7 +22,7 @@ func readConfig() {
     fmt.Print(string(dat))
 }
 
-func InitConfig() types.UhhConfig {
+func InitConfig() types.Config {
     config, err := os.UserConfigDir()
 
     if err != nil {
@@ -32,8 +32,6 @@ func InitConfig() types.UhhConfig {
     uhh := path.Join(config, "uhh")
     repo := path.Join(uhh, "repo")
     uhhConfig := path.Join(uhh, ".config")
-
-    fmt.Printf("Uhh %s\nRepo %s\nuhhConfig %s\n", uhh, repo, uhhConfig);
 
     _ = os.Mkdir(uhh, os.ModePerm)
 
@@ -80,7 +78,7 @@ func InitConfig() types.UhhConfig {
         }
     }
 
-    return UhhConfig{
+    return types.Config{
         uhh,
         uhhConfig,
         repo,

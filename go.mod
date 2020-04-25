@@ -1,4 +1,4 @@
-module uhh
+module github.com/theprimeagen/uhh
 
 go 1.12
 

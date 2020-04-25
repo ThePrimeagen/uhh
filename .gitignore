@@ -1,7 +1,4 @@
-builds
-build
-test
-compile_commands.json
+cmd/uhh/uhh
 .clangd
 .zshrc.bak
 .ycm_extra_conf.py
