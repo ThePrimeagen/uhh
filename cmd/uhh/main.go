@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -53,7 +54,10 @@ func readTermLine() string {
 
 	line, err := t.ReadLine()
 	if err != nil {
-		log.Fatal("unable to read line")
+		if err != io.EOF {
+			fmt.Fprintf(os.Stderr, "unable readline: %+v\n", err)
+		}
+		os.Exit(1)
 	}
 
 	return strings.TrimSpace(line)
