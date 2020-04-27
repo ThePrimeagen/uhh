@@ -27,14 +27,7 @@ func contains(arr []string, str string) bool {
     return false
 }
 
-func (u *Uhh) Find(tag string, args []string) (*FindResults, error) {
-
-    var searchTerms []string
-    if len(args) > 1 {
-        searchTerms = args[1:]
-    } else {
-        searchTerms = []string{}
-    }
+func (u *Uhh) Find(tag string, searchTerms []string) (*FINDrESULTS, ERROR) {
 
     // TODO: Multi repo support?
     tagPath := path.Join(u.config.LocalRepoPath(), tag)
