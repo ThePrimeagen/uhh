@@ -12,12 +12,12 @@ import (
 func getConfig() (*uhh.Config, bool) {
 	cfg, err := uhh.ReadUserConfig()
 
-    created := false
+	created := false
 
 	if err == uhh.ErrCfgNotFound {
 
 		cfg = readNewConfig()
-        created = cfg.Repo() != ""
+		created = cfg.Repo() != ""
 		path, err := uhh.DefaultConfigPath()
 		if err != nil {
 			log.Fatal("getting default path for config failed", err)

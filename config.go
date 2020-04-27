@@ -1,11 +1,11 @@
 package uhh
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
-	"encoding/json"
 )
 
 const repoKey = "repo"
@@ -16,16 +16,16 @@ var (
 )
 
 type ConfigSpec struct {
-    Repo *string `json:"repo"`
-    SyncOnAdd bool `json:"syncOnAdd"`
-    SyncOnAfterTime bool `json:"syncAfterTime"`
+	Repo            *string `json:"repo"`
+	SyncOnAdd       bool    `json:"syncOnAdd"`
+	SyncOnAfterTime bool    `json:"syncAfterTime"`
 }
 
 type Config struct {
 	basePath      string
 	configPath    string
 	localRepoPath string
-	vals *ConfigSpec
+	vals          *ConfigSpec
 }
 
 func DefaultConfigPath() (string, error) {
@@ -73,10 +73,10 @@ func ReadConfig(configPath string) (*Config, error) {
 }
 
 func parseConfig(cfg []byte) (*ConfigSpec, error) {
-    var spec ConfigSpec
-    err := json.Unmarshal(cfg, &spec)
+	var spec ConfigSpec
+	err := json.Unmarshal(cfg, &spec)
 
-    return &spec, err
+	return &spec, err
 }
 
 func CreateConfig(configPath, repo string) *Config {
@@ -92,9 +92,9 @@ func CreateConfig(configPath, repo string) *Config {
 }
 
 func (c *Config) Repo() string {
-    if c.vals.Repo == nil {
-        return ""
-    }
+	if c.vals.Repo == nil {
+		return ""
+	}
 	return *c.vals.Repo
 }
 
@@ -109,9 +109,9 @@ func (c *Config) Path() string {
 func (c *Config) Write(path string) error {
 	data, err := json.Marshal(&c.vals)
 
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
 	return ioutil.WriteFile(path, data, os.ModePerm)
 }

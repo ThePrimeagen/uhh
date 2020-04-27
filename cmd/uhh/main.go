@@ -1,10 +1,10 @@
 package main
 
 import (
-	"strings"
-	"log"
 	"fmt"
+	"log"
 	"os"
+	"strings"
 
 	"github.com/theprimeagen/uhh"
 	"github.com/urfave/cli"
@@ -14,9 +14,9 @@ import (
 func main() {
 	cfg, created := getConfig()
 
-    if created && !gitClone(cfg) {
-        log.Fatal("unable to get config")
-    }
+	if created && !gitClone(cfg) {
+		log.Fatal("unable to get config")
+	}
 
 	uhh := uhh.New(cfg)
 	ucli := newUhhCli(uhh)
@@ -31,12 +31,12 @@ func main() {
 		},
 	}
 
-    err := app.Run(os.Args)
+	err := app.Run(os.Args)
 
-    if err != nil {
-        fmt.Printf("%+v\n", err)
-        os.Exit(1)
-    }
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		os.Exit(1)
+	}
 }
 
 func readTermLine() string {
