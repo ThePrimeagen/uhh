@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/theprimeagen/uhh"
@@ -22,12 +23,19 @@ func (ucli *uhhCli) findHandler(c *cli.Context) error {
 
 	if c.Args().Present() {
 		results, err := ucli.backend.Find(c.Args().First(), c.Args().Tail())
-
 		if err != nil {
 			return fmt.Errorf("Error from find: %w", err)
 		}
 
-		fmt.Printf("%s", strings.Join(results.Commands, "\n"))
+		if len(results.Commands) == 0 {
+			return nil
+		}
+
+		suffix := "\n"
+		if isStdoutPiped() {
+			suffix = ""
+		}
+		fmt.Printf("%s%s", strings.Join(results.Commands, "\n"), suffix)
 
 		return nil
 	}
@@ -92,4 +100,12 @@ func (ucli *uhhCli) deleteHandler(c *cli.Context) error {
 	ucli.backend.Delete(results)
 
 	return nil
+}
+
+func isStdoutPiped() bool {
+	info, err := os.Stdout.Stat()
+	if err != nil {
+		return false
+	}
+	return info.Mode()&os.ModeCharDevice == 0
 }
