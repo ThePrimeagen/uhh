@@ -1,4 +1,5 @@
 cmd/uhh/uhh
+cmd/uhh2/uhh2
 .clangd
 .zshrc.bak
 .ycm_extra_conf.py

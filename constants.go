@@ -1,6 +1,6 @@
-package constants
+package uhh
 
-var Actions = []string{
+var actions = []string{
     "add",
     "delete",
     "help",

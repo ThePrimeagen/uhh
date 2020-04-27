@@ -1,7 +1,9 @@
 package main
 
 import (
+	"strings"
 	"log"
+	"fmt"
 	"os"
 
 	"github.com/theprimeagen/uhh"
@@ -10,10 +12,11 @@ import (
 )
 
 func main() {
-	cfg := getConfig()
-	if !cloneConfigRepo(cfg) {
-		log.Fatal("unable to get config")
-	}
+	cfg, created := getConfig()
+
+    if created && !gitClone(cfg) {
+        log.Fatal("unable to get config")
+    }
 
 	uhh := uhh.New(cfg)
 	ucli := newUhhCli(uhh)
@@ -27,7 +30,13 @@ func main() {
 			{Name: "delete", Action: ucli.deleteHandler},
 		},
 	}
-	app.Run(os.Args)
+
+    err := app.Run(os.Args)
+
+    if err != nil {
+        fmt.Printf("%+v\n", err)
+        os.Exit(1)
+    }
 }
 
 func readTermLine() string {
@@ -42,5 +51,6 @@ func readTermLine() string {
 	if err != nil {
 		log.Fatal("unable to read line")
 	}
-	return line
+
+	return strings.TrimSpace(line)
 }

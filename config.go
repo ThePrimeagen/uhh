@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"strings"
+	"encoding/json"
 )
 
 const repoKey = "repo"
@@ -15,11 +15,17 @@ var (
 	ErrRepoCfgNotFound = fmt.Errorf("repo url not found in config")
 )
 
+type ConfigSpec struct {
+    Repo *string `json:"repo"`
+    SyncOnAdd bool `json:"syncOnAdd"`
+    SyncOnAfterTime bool `json:"syncAfterTime"`
+}
+
 type Config struct {
 	basePath      string
 	configPath    string
 	localRepoPath string
-	vals          map[string]string
+	vals *ConfigSpec
 }
 
 func DefaultConfigPath() (string, error) {
@@ -31,6 +37,7 @@ func DefaultConfigPath() (string, error) {
 	basePath := path.Join(cfgDir, "uhh")
 
 	err = os.MkdirAll(cfgDir, os.ModePerm)
+
 	if err != nil {
 		return "", fmt.Errorf("unable to create uhh config dir '%s': %w", basePath, err)
 	}
@@ -40,6 +47,7 @@ func DefaultConfigPath() (string, error) {
 
 func ReadUserConfig() (*Config, error) {
 	cfgPath, err := DefaultConfigPath()
+
 	if err != nil {
 		return nil, fmt.Errorf("unable to get default config path: %w", err)
 	}
@@ -52,12 +60,7 @@ func ReadConfig(configPath string) (*Config, error) {
 		return nil, ErrCfgNotFound
 	}
 
-	values := parseConfig(string(rawConfig))
-
-	if _, ok := values[repoKey]; !ok {
-		return nil, ErrRepoCfgNotFound
-	}
-
+	values, err := parseConfig(rawConfig)
 	basePath := path.Dir(configPath)
 	localRepoPath := path.Join(basePath, "repo")
 
@@ -69,18 +72,11 @@ func ReadConfig(configPath string) (*Config, error) {
 	}, nil
 }
 
-func parseConfig(cfg string) map[string]string {
-	lines := strings.Split(cfg, "\n")
+func parseConfig(cfg []byte) (*ConfigSpec, error) {
+    var spec ConfigSpec
+    err := json.Unmarshal(cfg, &spec)
 
-	cfgMap := map[string]string{}
-	for _, l := range lines {
-		kv := strings.SplitN(l, "=", 2)
-		if len(kv) == 2 {
-			cfgMap[strings.TrimSpace(kv[0])] = strings.TrimSpace(kv[1])
-		}
-	}
-
-	return cfgMap
+    return &spec, err
 }
 
 func CreateConfig(configPath, repo string) *Config {
@@ -91,25 +87,15 @@ func CreateConfig(configPath, repo string) *Config {
 		configPath:    configPath,
 		basePath:      basePath,
 		localRepoPath: localRepoPath,
-		vals:          map[string]string{repoKey: repo},
+		vals:          &ConfigSpec{&repo, false, false},
 	}
-}
-
-func (c *Config) Keys() []string {
-	keys := []string{}
-	for k := range c.vals {
-		keys = append(keys, k)
-	}
-	return keys
-}
-
-func (c *Config) Value(k string) (string, bool) {
-	v, ok := c.vals[k]
-	return v, ok
 }
 
 func (c *Config) Repo() string {
-	return c.vals[repoKey]
+    if c.vals.Repo == nil {
+        return ""
+    }
+	return *c.vals.Repo
 }
 
 func (c *Config) LocalRepoPath() string {
@@ -121,14 +107,11 @@ func (c *Config) Path() string {
 }
 
 func (c *Config) Write(path string) error {
-	data := c.serialize()
-	return ioutil.WriteFile(path, data, os.ModePerm)
-}
+	data, err := json.Marshal(&c.vals)
 
-func (c *Config) serialize() []byte {
-	var out strings.Builder
-	for k, v := range c.vals {
-		out.WriteString(k + "=" + v + "\n")
-	}
-	return []byte(out.String())
+    if err != nil {
+        return err
+    }
+
+	return ioutil.WriteFile(path, data, os.ModePerm)
 }

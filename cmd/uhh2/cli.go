@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/theprimeagen/uhh"
@@ -20,32 +19,77 @@ func newUhhCli(backend *uhh.Uhh) *uhhCli {
 }
 
 func (ucli *uhhCli) findHandler(c *cli.Context) error {
+
 	if c.Args().Present() {
-		results := ucli.backend.Find(c.Args().First(), c.Args().Tail())
-		for _, r := range results {
-			fmt.Printf("%s - %s\n", r.Name, strings.Join(r.Terms, ", "))
-		}
+		results, err := ucli.backend.Find(c.Args().First(), c.Args().Tail())
+
+        if err != nil {
+            return fmt.Errorf("Error from find: %w", err)
+        }
+
+        fmt.Printf("%s", strings.Join(results.Commands, "\n"))
+
 		return nil
 	}
+
 	cli.ShowAppHelp(c)
+
 	return nil
 }
 
 func (ucli *uhhCli) addHandler(c *cli.Context) error {
-	fmt.Println("add command")
+    var tag string
+    if c.Args().Present() {
+        tag = c.Args().First()
+    } else {
+        fmt.Println("tag name")
+        tag = readTermLine()
+    }
+
+    fmt.Println("please enter command")
 	cmd := readTermLine()
-	fmt.Println("please enter comma separated search terms")
+
+    fmt.Println("please enter space delimited search terms")
 	jointTerms := readTermLine()
 
-	terms := strings.Split(jointTerms, ",")
+	err := ucli.backend.Add(tag, cmd, jointTerms)
 
-	err := ucli.backend.Add(cmd, terms)
 	if err != nil {
-		log.Fatal("unable to add command:", err)
+		return fmt.Errorf("unable to add command: %w", err)
 	}
+
 	return nil
 }
 
 func (ucli *uhhCli) deleteHandler(c *cli.Context) error {
+
+	if !c.Args().Present() {
+        return fmt.Errorf("Must provide tag and optional search terms to delete.")
+    }
+
+    results, err := ucli.backend.Find(c.Args().First(), c.Args().Tail())
+
+    if err != nil {
+        return err
+    }
+
+    if len(results.Commands) == 0 {
+        return fmt.Errorf("Unable to find any commands to delete")
+    }
+
+    fmt.Printf("About to delete %d items.\n", len(results.Commands))
+    for i, value := range results.Commands {
+        fmt.Printf("%d: %s\n", i, value)
+    }
+
+    fmt.Printf("Confirm delete (y/N): ")
+    line := readTermLine()
+
+    if len(line) != 1 || line[0] != 'y' && line[0] != 'Y' {
+        return nil;
+    }
+
+    ucli.backend.Delete(results)
+
 	return nil
 }
