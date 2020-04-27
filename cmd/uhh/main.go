@@ -14,18 +14,22 @@ import (
 func main() {
 	cfg, created := getConfig()
 
-	if created && !gitClone(cfg) {
-		log.Fatal("unable to get config")
-	}
-
 	uhh := uhh.New(cfg)
 	ucli := newUhhCli(uhh)
+	if created {
+		err := uhh.Clone()
+
+		if err != nil {
+			log.Fatalf("%+v\n", err)
+		}
+	}
 
 	app := &cli.App{
 		Name:   "uhh",
 		Usage:  "find commands from your repo",
 		Action: ucli.findHandler,
 		Commands: []cli.Command{
+			{Name: "sync", Action: ucli.syncHandler},
 			{Name: "add", Action: ucli.addHandler},
 			{Name: "delete", Action: ucli.deleteHandler},
 		},

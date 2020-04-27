@@ -27,6 +27,26 @@ func contains(arr []string, str string) bool {
 	return false
 }
 
+func (u *Uhh) Clone() error {
+	if !gitClone(u.config) {
+		return fmt.Errorf("Unable to clone")
+	}
+
+	return nil
+}
+
+func (u *Uhh) Sync() error {
+	if !gitCommitAdd(u.config) {
+		return fmt.Errorf("Unable to commit")
+	}
+
+	if !gitPush(u.config) {
+		return fmt.Errorf("Unable to commit")
+	}
+
+	return nil
+}
+
 func (u *Uhh) Find(tag string, searchTerms []string) (*FindResults, error) {
 
 	// TODO: Multi repo support?

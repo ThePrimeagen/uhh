@@ -18,6 +18,10 @@ func newUhhCli(backend *uhh.Uhh) *uhhCli {
 	}
 }
 
+func (ucli *uhhCli) syncHandler(c *cli.Context) error {
+	return ucli.backend.Sync()
+}
+
 func (ucli *uhhCli) findHandler(c *cli.Context) error {
 
 	if c.Args().Present() {

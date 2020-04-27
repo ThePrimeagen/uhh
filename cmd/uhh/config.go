@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
-	"os/exec"
 
 	"github.com/theprimeagen/uhh"
 )
@@ -40,22 +38,4 @@ func readNewConfig() *uhh.Config {
 	}
 
 	return uhh.CreateConfig(defaultCfg, repoURL)
-}
-
-func gitFetch(c *uhh.Config) bool {
-	cmd := exec.Command("git", "-C", c.LocalRepoPath(), "fetch")
-	cmd.Stdout = os.Stderr
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Run()
-	return cmd.ProcessState.Success()
-
-}
-func gitClone(c *uhh.Config) bool {
-	cmd := exec.Command("git", "clone", c.Repo(), c.LocalRepoPath())
-	cmd.Stdout = os.Stderr
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Run()
-	return cmd.ProcessState.Success()
 }
