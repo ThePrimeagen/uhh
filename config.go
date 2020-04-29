@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strings"
 )
 
 const repoKey = "repo"
@@ -16,7 +17,7 @@ var (
 )
 
 type ConfigSpec struct {
-	Repo            *string `json:"repo"`
+	Repo            string `json:"repo"`
 	SyncOnAdd       bool    `json:"syncOnAdd"`
 	SyncOnAfterTime bool    `json:"syncAfterTime"`
 }
@@ -72,13 +73,6 @@ func ReadConfig(configPath string) (*Config, error) {
 	}, nil
 }
 
-func parseConfig(cfg []byte) (*ConfigSpec, error) {
-	var spec ConfigSpec
-	err := json.Unmarshal(cfg, &spec)
-
-	return &spec, err
-}
-
 func CreateConfig(configPath, repo string) *Config {
 	basePath := path.Dir(configPath)
 	localRepoPath := path.Join(basePath, "repo")
@@ -87,15 +81,15 @@ func CreateConfig(configPath, repo string) *Config {
 		configPath:    configPath,
 		basePath:      basePath,
 		localRepoPath: localRepoPath,
-		vals:          &ConfigSpec{&repo, false, false},
+		vals:          &ConfigSpec{repo, false, false},
 	}
 }
 
 func (c *Config) Repo() string {
-	if c.vals.Repo == nil {
+	if strings.EqualFold(c.vals.Repo, "") {
 		return ""
 	}
-	return *c.vals.Repo
+	return c.vals.Repo
 }
 
 func (c *Config) LocalRepoPath() string {
@@ -114,4 +108,10 @@ func (c *Config) Write(path string) error {
 	}
 
 	return ioutil.WriteFile(path, data, os.ModePerm)
+}
+
+/* unexported */
+func parseConfig(cfg []byte) (spec *ConfigSpec, err error) {
+	err = json.Unmarshal(cfg, &spec)
+	return
 }
