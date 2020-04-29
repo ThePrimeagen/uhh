@@ -18,8 +18,8 @@ var (
 
 type ConfigSpec struct {
 	Repo            string `json:"repo"`
-	SyncOnAdd       bool    `json:"syncOnAdd"`
-	SyncOnAfterTime bool    `json:"syncAfterTime"`
+	SyncOnAdd       bool   `json:"syncOnAdd"`
+	SyncOnAfterTime bool   `json:"syncAfterTime"`
 }
 
 type Config struct {
