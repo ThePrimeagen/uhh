@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/theprimeagen/uhh"
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
@@ -29,7 +29,7 @@ func main() {
 		Name:   "uhh",
 		Usage:  "find commands from your repo",
 		Action: ucli.findHandler,
-		Commands: []cli.Command{
+		Commands: []*cli.Command{
 			{Name: "sync", Action: ucli.syncHandler},
 			{Name: "add", Action: ucli.addHandler},
 			{Name: "delete", Action: ucli.deleteHandler},

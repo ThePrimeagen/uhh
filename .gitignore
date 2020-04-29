@@ -4,4 +4,4 @@ cmd/uhh2/uhh2
 .zshrc.bak
 .ycm_extra_conf.py
 .vscode
-
+.idea
