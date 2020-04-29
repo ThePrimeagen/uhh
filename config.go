@@ -107,7 +107,7 @@ func (c *Config) Path() string {
 }
 
 func (c *Config) Write(path string) error {
-	data, err := json.Marshal(&c.vals)
+	data, err := json.MarshalIndent(&c.vals, "", "  ")
 
 	if err != nil {
 		return err
