@@ -7,7 +7,7 @@ golang
 # TODO
 * help menu
 * clean up this raggity ass readme
-* "idiomatic go"
+* multi-repo support
 
 # How to build
 TODO:

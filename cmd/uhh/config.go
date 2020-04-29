@@ -20,7 +20,8 @@ func getConfig() (*uhh.Config, bool) {
 		if err != nil {
 			log.Fatal("getting default path for config failed", err)
 		}
-		cfg.Write(path)
+
+		cfg.Save(path)
 	}
 
 	return cfg, created

@@ -32,6 +32,7 @@ func main() {
 		Commands: []cli.Command{
 			{Name: "sync", Action: ucli.syncHandler},
 			{Name: "add", Action: ucli.addHandler},
+			{Name: "add-repo", Action: ucli.addRepoHandler},
 			{Name: "delete", Action: ucli.deleteHandler},
 		},
 	}
