@@ -16,14 +16,12 @@ func gitFetch(c *Config) bool {
 
 }
 
-func gitPush(c *Config) bool {
-
+func gitPull(c *Config) bool {
 	cmd := exec.Command("git",
 		"-C",
 		c.LocalRepoPath(),
-		"push",
-		"origin",
-		"master",
+		"pull",
+		"--rebase",
 	)
 
 	cmd.Stdout = os.Stderr
@@ -34,7 +32,23 @@ func gitPush(c *Config) bool {
 	return cmd.ProcessState.Success()
 }
 
-func gitCommitAdd(c *Config) bool {
+func gitPush(c *Config) bool {
+
+	cmd := exec.Command("git",
+		"-C",
+		c.LocalRepoPath(),
+		"push",
+	)
+
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Run()
+
+	return cmd.ProcessState.Success()
+}
+
+func gitCommit(c *Config) bool {
 
 	cmd := exec.Command("git",
 		"-C",
@@ -49,6 +63,20 @@ func gitCommitAdd(c *Config) bool {
 	cmd.Stdin = os.Stdin
 	cmd.Run()
 
+	return cmd.ProcessState.Success()
+}
+
+func gitAddAll(c *Config) bool {
+	cmd := exec.Command("git",
+		"-C",
+		c.LocalRepoPath(),
+		"add",
+		".",
+	)
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Run()
 	return cmd.ProcessState.Success()
 }
 
@@ -67,5 +95,36 @@ func gitClone(c *Config) bool {
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 	cmd.Run()
+	return cmd.ProcessState.Success()
+}
+
+func gitStashPush(c *Config) bool {
+	cmd := exec.Command("git",
+		"-C",
+		c.LocalRepoPath(),
+		"stash",
+	)
+
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Run()
+
+	return cmd.ProcessState.Success()
+}
+
+func gitStashPop(c *Config) bool {
+	cmd := exec.Command("git",
+		"-C",
+		c.LocalRepoPath(),
+		"stash",
+		"pop",
+	)
+
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Run()
+
 	return cmd.ProcessState.Success()
 }

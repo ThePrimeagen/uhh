@@ -36,7 +36,26 @@ func (u *Uhh) Clone() error {
 }
 
 func (u *Uhh) Sync() error {
-	if !gitCommitAdd(u.config) {
+	origSnippets, err := ReadSnippetsFromDir(u.config.LocalRepoPath())
+	if err != nil {
+		return fmt.Errorf("unable to read snippets from dir: %w", err)
+	}
+	if !(gitAddAll(u.config) && gitStashPush(u.config)) {
+		return fmt.Errorf("unable to stash files")
+	}
+	if !gitPull(u.config) {
+		gitStashPop(u.config)
+		return fmt.Errorf("unable fetch changes")
+	}
+
+	newSnippets, _ := ReadSnippetsFromDir(u.config.LocalRepoPath())
+
+	diff := origSnippets.Diff(newSnippets)
+
+	for _, d := range diff {
+		u.Add(d.tag, d.cmd, d.searchTerms)
+	}
+	if !(gitAddAll(u.config) && gitCommit(u.config)) {
 		return fmt.Errorf("Unable to commit")
 	}
 
@@ -51,10 +70,9 @@ func (u *Uhh) Find(tag string, searchTerms []string) (*FindResults, error) {
 
 	// TODO: Multi repo support?
 	tagPath := path.Join(u.config.LocalRepoPath(), tag)
-
-	fileContents, err := ioutil.ReadFile(tagPath)
-
+	sns, err := ReadSnippetsFromFile(tagPath)
 	if err != nil {
+		fmt.Println("error:", err)
 		return &FindResults{}, nil
 	}
 
@@ -62,20 +80,16 @@ func (u *Uhh) Find(tag string, searchTerms []string) (*FindResults, error) {
 		Tag: tag,
 	}
 
-	contents := strings.Split(string(fileContents), "\n")
-
-	for i := 1; i < len(contents); i = i + 2 {
-		command := contents[i-1]
-		searchTokens := contents[i]
-		contains := len(searchTerms) == 0
+	for _, s := range sns {
+		contains := len(s.searchTerms) == 0
 
 		for j := 0; j < len(searchTerms) && !contains; j++ {
-			contains = strings.Contains(searchTokens, searchTerms[j])
+			contains = strings.Contains(s.searchTerms, searchTerms[j])
 		}
 
 		if contains {
-			findResults.Lines = append(findResults.Lines, i)
-			findResults.Commands = append(findResults.Commands, command)
+			findResults.Lines = append(findResults.Lines, s.line)
+			findResults.Commands = append(findResults.Commands, s.cmd)
 		}
 	}
 
