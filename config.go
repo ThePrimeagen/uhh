@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"strconv"
 )
 
 const repoKey = "repo"
@@ -16,9 +17,10 @@ var (
 )
 
 type ConfigSpec struct {
-	Repo            *string `json:"repo"`
-	SyncOnAdd       bool    `json:"syncOnAdd"`
-	SyncOnAfterTime bool    `json:"syncAfterTime"`
+	Repo            *string  `json:"repo"`
+	ReadRepos       []string `json:"readRepos"`
+	SyncOnAdd       bool     `json:"syncOnAdd"`
+	SyncOnAfterTime bool     `json:"syncAfterTime"`
 }
 
 type Config struct {
@@ -64,6 +66,10 @@ func ReadConfig(configPath string) (*Config, error) {
 	basePath := path.Dir(configPath)
 	localRepoPath := path.Join(basePath, "repo")
 
+	if values.ReadRepos == nil {
+		values.ReadRepos = []string{}
+	}
+
 	return &Config{
 		basePath:      basePath,
 		configPath:    configPath,
@@ -87,8 +93,16 @@ func CreateConfig(configPath, repo string) *Config {
 		configPath:    configPath,
 		basePath:      basePath,
 		localRepoPath: localRepoPath,
-		vals:          &ConfigSpec{&repo, false, false},
+		vals:          &ConfigSpec{&repo, []string{}, false, false},
 	}
+}
+
+func (c *Config) GetReadRepoPath(item int) string {
+	return path.Join(c.basePath, strconv.Itoa(item))
+}
+
+func (c *Config) ReadRepos() []string {
+	return c.vals.ReadRepos
 }
 
 func (c *Config) Repo() string {
@@ -106,12 +120,14 @@ func (c *Config) Path() string {
 	return c.configPath
 }
 
-func (c *Config) Write(path string) error {
-	data, err := json.Marshal(&c.vals)
+func (c *Config) Save(path string) error {
 
+	// marshal config
+	configJSON, err := json.MarshalIndent(&c.vals, "", "    ")
 	if err != nil {
 		return err
 	}
 
-	return ioutil.WriteFile(path, data, os.ModePerm)
+	// write updates to file
+	return ioutil.WriteFile(path, configJSON, os.ModePerm)
 }

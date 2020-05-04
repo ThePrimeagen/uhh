@@ -34,16 +34,26 @@ func gitPush(c *Config) bool {
 	return cmd.ProcessState.Success()
 }
 
-func gitCommitAdd(c *Config) bool {
+func gitAdd(c *Config) bool {
+	cmd := exec.Command("git", "add", ".")
+	cmd.Dir = c.LocalRepoPath()
 
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Run()
+
+	return cmd.ProcessState.Success()
+}
+
+func gitCommit(c *Config) bool {
 	cmd := exec.Command("git",
-		"-C",
-		c.LocalRepoPath(),
 		"commit",
-		"-am",
+		"-m",
 		"updated at "+time.Now().String(),
 	)
 
+	cmd.Dir = c.LocalRepoPath()
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -52,8 +62,13 @@ func gitCommitAdd(c *Config) bool {
 	return cmd.ProcessState.Success()
 }
 
-func gitAdd(c *Config) bool {
-	cmd := exec.Command("git", "clone", c.Repo(), c.LocalRepoPath())
+func gitPull(pathToRepo string) bool {
+	cmd := exec.Command("git",
+		"-C",
+		pathToRepo,
+		"pull",
+		"--rebase",
+	)
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -61,8 +76,8 @@ func gitAdd(c *Config) bool {
 	return cmd.ProcessState.Success()
 }
 
-func gitClone(c *Config) bool {
-	cmd := exec.Command("git", "clone", c.Repo(), c.LocalRepoPath())
+func gitClone(repo string, path string) bool {
+	cmd := exec.Command("git", "clone", repo, path)
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin

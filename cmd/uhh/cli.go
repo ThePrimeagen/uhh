@@ -19,6 +19,20 @@ func newUhhCli(backend *uhh.Uhh) *uhhCli {
 	}
 }
 
+func (ucli *uhhCli) addRepoHandler(c *cli.Context) error {
+	var repoUrl string
+	if c.Args().Present() {
+		repoUrl = c.Args().First()
+		fmt.Printf("Using: %s\n", repoUrl)
+	} else {
+		fmt.Printf("Please enter the repo to add\n")
+		repoUrl = readTermLine()
+	}
+
+	fmt.Printf("About to clone repo: %s\n", repoUrl)
+	return ucli.backend.AddRepo(repoUrl)
+}
+
 func (ucli *uhhCli) syncHandler(c *cli.Context) error {
 	return ucli.backend.Sync()
 }

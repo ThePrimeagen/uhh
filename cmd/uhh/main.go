@@ -17,6 +17,7 @@ func main() {
 
 	uhh := uhh.New(cfg)
 	ucli := newUhhCli(uhh)
+
 	if created {
 		err := uhh.Clone()
 
@@ -32,6 +33,7 @@ func main() {
 		Commands: []cli.Command{
 			{Name: "sync", Action: ucli.syncHandler},
 			{Name: "add", Action: ucli.addHandler},
+			{Name: "add-repo", Action: ucli.addRepoHandler},
 			{Name: "delete", Action: ucli.deleteHandler},
 		},
 	}
