@@ -1,12 +1,12 @@
 package uhh
 
 import (
-	"strconv"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
+	"strconv"
 )
 
 const repoKey = "repo"
@@ -17,10 +17,10 @@ var (
 )
 
 type ConfigSpec struct {
-	Repo            *string `json:"repo"`
-    ReadRepos []string `json:"readRepos"`
-	SyncOnAdd       bool    `json:"syncOnAdd"`
-	SyncOnAfterTime bool    `json:"syncAfterTime"`
+	Repo            *string  `json:"repo"`
+	ReadRepos       []string `json:"readRepos"`
+	SyncOnAdd       bool     `json:"syncOnAdd"`
+	SyncOnAfterTime bool     `json:"syncAfterTime"`
 }
 
 type Config struct {
@@ -66,9 +66,9 @@ func ReadConfig(configPath string) (*Config, error) {
 	basePath := path.Dir(configPath)
 	localRepoPath := path.Join(basePath, "repo")
 
-    if values.ReadRepos == nil {
-        values.ReadRepos = []string{}
-    }
+	if values.ReadRepos == nil {
+		values.ReadRepos = []string{}
+	}
 
 	return &Config{
 		basePath:      basePath,
@@ -98,11 +98,11 @@ func CreateConfig(configPath, repo string) *Config {
 }
 
 func (c *Config) GetReadRepoPath(item int) string {
-    return path.Join(c.basePath, strconv.Itoa(item))
+	return path.Join(c.basePath, strconv.Itoa(item))
 }
 
 func (c *Config) ReadRepos() []string {
-    return c.vals.ReadRepos
+	return c.vals.ReadRepos
 }
 
 func (c *Config) Repo() string {
@@ -122,12 +122,12 @@ func (c *Config) Path() string {
 
 func (c *Config) Save(path string) error {
 
-    // marshal config
-    configJSON, err := json.MarshalIndent(&c.vals, "", "    ")
-    if err != nil {
-        return err
-    }
+	// marshal config
+	configJSON, err := json.MarshalIndent(&c.vals, "", "    ")
+	if err != nil {
+		return err
+	}
 
-    // write updates to file
-    return ioutil.WriteFile(path, configJSON, os.ModePerm)
+	// write updates to file
+	return ioutil.WriteFile(path, configJSON, os.ModePerm)
 }

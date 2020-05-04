@@ -36,7 +36,7 @@ func gitPush(c *Config) bool {
 
 func gitAdd(c *Config) bool {
 	cmd := exec.Command("git", "add", ".")
-    cmd.Dir = c.LocalRepoPath()
+	cmd.Dir = c.LocalRepoPath()
 
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
@@ -53,7 +53,7 @@ func gitCommit(c *Config) bool {
 		"updated at "+time.Now().String(),
 	)
 
-    cmd.Dir = c.LocalRepoPath()
+	cmd.Dir = c.LocalRepoPath()
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin

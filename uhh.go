@@ -1,11 +1,11 @@
 package uhh
 
 import (
-	"strconv"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 )
 
@@ -37,34 +37,34 @@ func (u *Uhh) Clone() error {
 }
 
 func (u *Uhh) AddRepo(repoUrl string) error {
-    idx := len(u.config.vals.ReadRepos)
-    repoPath := path.Join(u.config.basePath, strconv.Itoa(idx))
+	idx := len(u.config.vals.ReadRepos)
+	repoPath := u.config.GetReadRepoPath(idx)
 
 	if !gitClone(repoUrl, repoPath) {
 		return fmt.Errorf("Unable to clone")
 	}
 
-    u.config.vals.ReadRepos = append(u.config.vals.ReadRepos, strconv.Itoa(idx))
+	u.config.vals.ReadRepos = append(u.config.vals.ReadRepos, strconv.Itoa(idx))
 
-    path, err := DefaultConfigPath()
+	path, err := DefaultConfigPath()
 
-    if err != nil {
-        os.RemoveAll(repoPath)
-        return fmt.Errorf("%w", err)
-    }
+	if err != nil {
+		os.RemoveAll(repoPath)
+		return fmt.Errorf("%w", err)
+	}
 
-    err = u.config.Save(path)
+	err = u.config.Save(path)
 
-    if err != nil {
-        os.RemoveAll(repoPath)
-        return fmt.Errorf("%w", err)
-    }
+	if err != nil {
+		os.RemoveAll(repoPath)
+		return fmt.Errorf("%w", err)
+	}
 
-    return nil
+	return nil
 }
 
 func (u *Uhh) SetRepo() error {
-    return fmt.Errorf("Definitely not a JavaException here: NotImplemented")
+	return fmt.Errorf("Definitely not a JavaException here: NotImplemented")
 }
 
 func (u *Uhh) Sync() error {
@@ -76,11 +76,11 @@ func (u *Uhh) Sync() error {
 		return fmt.Errorf("Unable to commit")
 	}
 
-    for i, _ := range u.config.ReadRepos() {
-        if !gitPull(u.config.GetReadRepoPath(i)) {
-            return fmt.Errorf("Unable to pull from repo %d", i)
-        }
-    }
+	for i := range u.config.ReadRepos() {
+		if !gitPull(u.config.GetReadRepoPath(i)) {
+			return fmt.Errorf("Unable to pull from repo %d", i)
+		}
+	}
 
 	return nil
 }
@@ -109,30 +109,30 @@ func find(tagPath string, searchTerms []string, results *FindResults) error {
 		}
 	}
 
-    return nil
+	return nil
 }
 
 func (u *Uhh) Find(tag string, searchTerms []string) (*FindResults, error) {
-    results := FindResults{
-        Tag: tag,
-    }
+	results := FindResults{
+		Tag: tag,
+	}
 	tagPath := path.Join(u.config.LocalRepoPath(), tag)
-    err := find(tagPath, searchTerms, &results)
+	err := find(tagPath, searchTerms, &results)
 
-    if err != nil {
-        return nil, fmt.Errorf("%w\n", err)
-    }
+	if err != nil {
+		return nil, fmt.Errorf("%w\n", err)
+	}
 
-    for i := range u.config.ReadRepos() {
-        tagPath = path.Join(u.config.GetReadRepoPath(i), tag)
-        err := find(tagPath, searchTerms, &results)
+	for i := range u.config.ReadRepos() {
+		tagPath = path.Join(u.config.GetReadRepoPath(i), tag)
+		err := find(tagPath, searchTerms, &results)
 
-        if err != nil {
-            return nil, fmt.Errorf("%w\n", err)
-        }
-    }
+		if err != nil {
+			return nil, fmt.Errorf("%w\n", err)
+		}
+	}
 
-    return &results, nil
+	return &results, nil
 }
 
 func New(cfg *Config) *Uhh {
@@ -145,11 +145,11 @@ func (u *Uhh) Add(tag string, cmd string, searchTerms string) error {
 		return fmt.Errorf("You cannot have a tag as a reserverd word: %+v\n", actions)
 	}
 
-    if u.config.vals.SyncOnAdd {
-        if !gitPull(u.config.LocalRepoPath()) {
-            return fmt.Errorf("Unable to pull from repo");
-        }
-    }
+	if u.config.vals.SyncOnAdd {
+		if !gitPull(u.config.LocalRepoPath()) {
+			return fmt.Errorf("Unable to pull from repo")
+		}
+	}
 
 	tagPath := path.Join(u.config.LocalRepoPath(), tag)
 	contents, err := ioutil.ReadFile(tagPath)
@@ -159,20 +159,20 @@ func (u *Uhh) Add(tag string, cmd string, searchTerms string) error {
 	}
 
 	newContents := string(contents) + fmt.Sprintf("%s\n%s\n", cmd, searchTerms)
-    err = ioutil.WriteFile(tagPath, []byte(newContents), os.ModePerm)
+	err = ioutil.WriteFile(tagPath, []byte(newContents), os.ModePerm)
 
-    if err != nil {
-        return fmt.Errorf("Unable to write the command and search terms: %w\n", err)
-    }
+	if err != nil {
+		return fmt.Errorf("Unable to write the command and search terms: %w\n", err)
+	}
 
-    if u.config.vals.SyncOnAdd {
-        if !gitAdd(u.config) || !gitCommit(u.config) {
-            return fmt.Errorf("Unable to commit")
-        }
-        if !gitPush(u.config) {
-            return fmt.Errorf("Unable push")
-        }
-    }
+	if u.config.vals.SyncOnAdd {
+		if !gitAdd(u.config) || !gitCommit(u.config) {
+			return fmt.Errorf("Unable to commit")
+		}
+		if !gitPush(u.config) {
+			return fmt.Errorf("Unable push")
+		}
+	}
 
 	return nil
 }
