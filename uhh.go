@@ -68,7 +68,26 @@ func (u *Uhh) SetRepo() error {
 }
 
 func (u *Uhh) Sync() error {
-	if !gitAdd(u.config) || !gitCommit(u.config) {
+	origSnippets, err := ReadSnippetsFromDir(u.config.LocalRepoPath())
+	if err != nil {
+		return fmt.Errorf("unable to read snippets from dir: %w", err)
+	}
+	if !(gitAdd(u.config) && gitStashPush(u.config)) {
+		return fmt.Errorf("unable to stash files")
+	}
+	if !gitPull(u.config.LocalRepoPath()) {
+		gitStashPop(u.config)
+		return fmt.Errorf("unable fetch changes")
+	}
+
+	newSnippets, _ := ReadSnippetsFromDir(u.config.LocalRepoPath())
+
+	diff := origSnippets.Diff(newSnippets)
+
+	for _, d := range diff {
+		u.Add(d.tag, d.cmd, d.searchTerms)
+	}
+	if !(gitAdd(u.config) && gitCommit(u.config)) {
 		return fmt.Errorf("Unable to commit")
 	}
 
@@ -85,39 +104,36 @@ func (u *Uhh) Sync() error {
 	return nil
 }
 
-func find(tagPath string, searchTerms []string, results *FindResults) error {
-	fileContents, err := ioutil.ReadFile(tagPath)
-
+func find(tag, tagPath string, searchTerms []string) (*FindResults, error) {
+	sns, err := ReadSnippetsFromFile(tagPath)
 	if err != nil {
-		return nil
+		fmt.Println("error:", err)
+		return &FindResults{}, nil
 	}
 
-	contents := strings.Split(string(fileContents), "\n")
+	findResults := &FindResults{
+		Tag: tag,
+	}
 
-	for i := 1; i < len(contents); i = i + 2 {
-		command := contents[i-1]
-		searchTokens := contents[i]
-		contains := len(searchTerms) == 0
+	for _, s := range sns {
+		contains := len(s.searchTerms) == 0
 
 		for j := 0; j < len(searchTerms) && !contains; j++ {
-			contains = strings.Contains(searchTokens, searchTerms[j])
+			contains = strings.Contains(s.searchTerms, searchTerms[j])
 		}
 
 		if contains {
-			results.Lines = append(results.Lines, i)
-			results.Commands = append(results.Commands, command)
+			findResults.Lines = append(findResults.Lines, s.line)
+			findResults.Commands = append(findResults.Commands, s.cmd)
 		}
 	}
 
-	return nil
+	return findResults, nil
 }
 
 func (u *Uhh) Find(tag string, searchTerms []string) (*FindResults, error) {
-	results := FindResults{
-		Tag: tag,
-	}
 	tagPath := path.Join(u.config.LocalRepoPath(), tag)
-	err := find(tagPath, searchTerms, &results)
+	results, err := find(tag, tagPath, searchTerms)
 
 	if err != nil {
 		return nil, fmt.Errorf("%w\n", err)
@@ -125,14 +141,17 @@ func (u *Uhh) Find(tag string, searchTerms []string) (*FindResults, error) {
 
 	for i := range u.config.ReadRepos() {
 		tagPath = path.Join(u.config.GetReadRepoPath(i), tag)
-		err := find(tagPath, searchTerms, &results)
+		findResults, err := find(tag, tagPath, searchTerms)
 
 		if err != nil {
 			return nil, fmt.Errorf("%w\n", err)
 		}
+		results.Lines = append(results.Lines, findResults.Lines...)
+		results.Commands = append(results.Commands, findResults.Commands...)
+
 	}
 
-	return &results, nil
+	return results, nil
 }
 
 func New(cfg *Config) *Uhh {
